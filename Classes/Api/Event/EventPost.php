@@ -1,8 +1,8 @@
 <?php
 
-include(dirname(__DIR__)."/Setttings/Setttings.php");         //Call Specifc//Incomplete//
+include(dirname(__DIR__)."/Event/Event.php");         //Call Specifc//Incomplete//
 
-class SetttingsPost extends Setttings {
+class EventPost extends Event {
     
     /*
      * Valid Parameters for a call

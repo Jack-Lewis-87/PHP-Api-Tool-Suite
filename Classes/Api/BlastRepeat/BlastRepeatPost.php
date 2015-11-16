@@ -1,8 +1,8 @@
 <?php
 
-include(dirname(__DIR__)."/Setttings/Setttings.php");         //Call Specifc//Incomplete//
+include(dirname(__DIR__)."/BlastRepeat/BlastRepeat.php");         //Call Specifc//Incomplete//
 
-class SetttingsPost extends Setttings {
+class BlastRepeatPost extends BlastRepeat {
     
     /*
      * Valid Parameters for a call
