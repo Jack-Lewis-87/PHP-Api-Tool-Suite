@@ -105,7 +105,7 @@ class ApiCallAbstract implements CliScriptInterface {
      */
     private $cli_query = [
         //Ex: "cli_entry_name" => ["returned_flag_var", "Description"]
-        "source_list" => ["source","Source List: Provide the source list to make the query from. Provide multi_list for the two 'multiple' options."],
+        "source_list" => ["source","Source List: Provide the source list to make the query from. Provide the multi_source as well when using the 'multiple' options."],
         "multiple_source_list" => ["multi_source","Multiple List Source: Comma seperated list of source 'lists'. Eg: \"Master,Test List\""],
         "query_mode" => ["mode", "Mode: For a match, require all criteria to be true 'and' or match if any one is true 'or'."],
         "criteria" => ["criteria", "Criteria: See docs page. Submit a criteria as 'criteriaX=' where X is an integer. Submit the critiria's other requirements (field, value, etc) with that integer. Eg: criteria1=exists field1=first_name"],
@@ -127,6 +127,7 @@ class ApiCallAbstract implements CliScriptInterface {
     private $cli_query_validation = [
         //Ex: "api_param" => [["first_dependency", "second_dependency", "etc.."]]  
         "multiple_source_list" => ["always_required" => ["source_list"]],
+        "source_list" => ["value_specifics" => [".multiple" => ["multiple_source_list"], ".multiple-all" => ["multiple_source_list"]]]
     ];
 
     /*
@@ -225,7 +226,7 @@ class ApiCallAbstract implements CliScriptInterface {
         foreach ($criteria as $key => $value) {
             if (isset($this->api_vars[$key]) || $key == "always_required") { //Proceed to validate if the key is set, or the key is the required parameters key. Unlike below, the "always_required" naming is important.
                 foreach ($value as $negation => $dependencies) {
-                    if (!isset($this->api_vars[$negation])) { //As "always_required" (or any other arbitrary name) won't be set, any dependencies of a nonsense name will always run. Unless some asshole submits always_required as a param.. Edit: If passed as a 0, now works as a feature.
+                    if (!isset($this->api_vars[$negation]) && $negation != "require_one" && $negation != "value_specifics") { //As "always_required" (or any other arbitrary name) won't be set, any dependencies of a nonsense name will always run. Unless some asshole submits always_required as a param.. Edit: If passed as a 0, now works as a feature.
                         foreach ($dependencies as $dependency) {
                             if (!isset($this->api_vars[$dependency])) { 
                                 if ($key == "always_required") {
@@ -235,11 +236,21 @@ class ApiCallAbstract implements CliScriptInterface {
                                 }
                             }
                         }
-                    }
-                    if ($negation == "require_one") {
+                    } else if ($negation == "require_one") {
                         $mix = array_intersect($dependencies, array_keys($this->api_vars));
                         if (count($mix) > 1 || count($mix) == 0) {
                             CliScriptAbstract::confirm("One, and only one, of the following must be submitted: ".implode(", ", $dependencies).".\nContinue anyway?","Add the '-h' option for more details on valid inputs.");
+                        }
+                    } else if ($negation == "value_specifics") {
+                        var_dump($dependencies);
+                        foreach ($dependencies as $value => $value_dependencies) {
+                            if ($this->api_vars[$key] == $value) {
+                                foreach ($value_dependencies as $dependency) {
+                                    if (!isset($this->api_vars[$dependency])) {
+                                        CliScriptAbstract::confirm("To use ".$display[$key][0]." as ".$value." you should also provide ".$display[$dependency][0].".\nContinue anyway?", "Add the '-h' option for more details on valid inputs.");
+                                    }
+                                }
+                            }
                         }
                     }
                 }

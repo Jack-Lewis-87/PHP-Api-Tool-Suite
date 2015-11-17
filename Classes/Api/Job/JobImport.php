@@ -72,7 +72,7 @@ class JobImport extends JobPost {
         //api_param => ["negation_param" => ["dependency_1", "dependency_2"], "always_required" => ["dependency_3"]],
         "always_required" => ["require_one" => ["url","file","emails"], "always_required" => ["list"]],
         "brand_name" => ["always_required" => ["file"]],
-        // "" => [],
+        // "" => [], 
     ];
 
     /*

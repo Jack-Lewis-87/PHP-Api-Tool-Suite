@@ -14,9 +14,23 @@ these comment markers
 */
 
 ////////////////////////////////////////////////////////////////////////////////
-//Title: Demo 1
-//Use Case: Create Profiles using Email.
-//Status: Isn't creating profiles I can find. 
+//Title: Test For Giordano
+//Use Case: Create a content w/ stuff.
+//Status: TBD
+//Client: Steve Does it all
+
+$account_credentials->setAccountById(4788);
+ 
+//Vars
+
+$api_object->setVar("url","http://www.stevedoesitall.com/this/page/isnt/real.html");
+// $api_object->setVar("", "extid");
+
+
+////////////////////////////////////////////////////////////////////////////////
+//Title: Demo Example 2
+//Use Case: Get user profile.
+//Status: Working
 //Client: Jack's Test Account
 /*
 $account_credentials->setAccountById(4627);
@@ -24,7 +38,6 @@ $account_credentials->setAccountById(4627);
 //Vars
 /*
 $api_object->setVar("id","jlewis@sailthru.com");
-$api_object->setVar("key", "extid");
 */
 
 ////////////////////////////////////////////////////////////////////////////////
