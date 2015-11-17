@@ -417,7 +417,7 @@ class Sailthru_Implementation_Client {
 
 
         print "\nUpload Details:\n";
-        $api_log_str .= "\nUpload Details:\n";
+        $api_log_str .= "Upload Details:\n";
         
         if (isset($params["list"])) {
             echo "List set: ".$params["list"]."\n"; 
@@ -575,6 +575,7 @@ class Sailthru_Implementation_Client {
 
     	$error_file = $this->openFile($this->error_dir ."/invalids_".$this->file_core."_".$day.".".$format, "w");
         $sub_file = $this->openFile($upload_dir."/".$this->file_core."_".$sub_file_num."_".$day.".".$format, "w");
+        fwrite($api_log, "Split file ".$sub_file_num." created.\n");
 		$sub_file_num += 1;
 
 		$isError = false;
@@ -686,7 +687,7 @@ class Sailthru_Implementation_Client {
 			throw new Exception("Unable to open the file's subfiles directory.");
 		}
 
-        fwrite($api_log, "\n\nRecord of every upload attempt plus full response.\n");
+        fwrite($api_log, "\nRecord of every upload attempt plus full response.\n");
         $retry_files = $this->openFile($retry_files_path, "w");
         $error_files = $this->openFile($error_files_path, "w");
 
