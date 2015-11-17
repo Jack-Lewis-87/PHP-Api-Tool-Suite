@@ -376,8 +376,6 @@ class Sailthru_Implementation_Client {
             $this->base_dir = $params["base_dir"]."/". $this->business_name."_Uploads";
             unset($params["base_dir"]);
         } else {
-            echo $this->file."\n";
-            echo dirname($this->file);
             $this->base_dir = dirname($this->file)."/". $this->business_name."_Uploads";
         }
 
