@@ -13,6 +13,8 @@ require_once($baseUrl."/Sailthru_Client.php");
 require_once($baseUrl."/Sailthru_Util.php");
 require_once($baseUrl."/Sailthru_Client_Exception.php");
 
+include_once(dirname(__DIR__)."/CliScriptAbstract.php");
+
 ini_set("auto_detect_line_endings", true);
 
 
@@ -41,10 +43,18 @@ class Sailthru_Implementation_Client {
     /**
      *
      * File ending
+     *
      * @var string
      */
     protected $format;
 
+    /**
+     *
+     * File ending
+     *
+     * @var string
+     */
+    protected $valid_formats = array("json","csv");    
 
     /**
      *
@@ -56,14 +66,22 @@ class Sailthru_Implementation_Client {
 
     /**
      *
-     * Directory holding the split files for upload
+     * Exisiting directory to place all others.
      * @var string
      */
     protected $base_dir;
 
     /**
      *
-     * Directory holding the split files for upload
+     * Main Upload Directory 
+     * @var string
+     */
+    protected $file_dir;
+
+    /**
+     *
+     * Directory holding the file for lines that didn't pass validation. 
+     * 
      * @var string
      */
     protected $error_dir;
@@ -123,18 +141,22 @@ class Sailthru_Implementation_Client {
 
     /**
      *
-     * Setting a lower bound to the stall limit. 
+     * Setting a lower bound to the stall limit. Edit: Seemingly not used.
+     *
      * @var int
      */
     protected $stallMin = 240; 
 
     /**
      *
-     * Maximum Jobs that can be run at once.
+     * Maximum Jobs that can be run at once. 5-50 is reasonable. Over 1K is indicating don't use a limit. 
+     * For reference based on file size and the file chunking size, 20mb for 5gb file = 5K uploads.
+     * Set monitor jobs to true if you want this script to watch the jobs after upload. 
+     *
      * @var string
      */
     protected $simultaneous_uploads = 5000;
-
+    protected $is_monitor_jobs = false;
     /**
      *
      * Setting a Maximum API calls before failure is declared. 
@@ -147,8 +169,7 @@ class Sailthru_Implementation_Client {
      * Setting Error codes to stop retry on and just print. 
      * @var int
      */
-    protected $known_error_codes = [3,2];
-    // [,"Missing required parameter:"]
+    protected $known_error_codes = []; //[3,2];
 
     /**
      *
@@ -163,6 +184,14 @@ class Sailthru_Implementation_Client {
      * @var boolean
      */
     protected $time_of_run;
+
+    /**
+     *
+     * Default time zone.
+     *
+     * @var string
+     */
+    protected $time_zone = "America/New_York";
 
     /**
      * Instantiate a new Import Class and a Sailthru Client with it. Base directory is used to 
@@ -181,6 +210,8 @@ class Sailthru_Implementation_Client {
         if ($retry_limit != null) {
             $this->retry_limit = $retry;
         }
+        
+        $this->setTimeZone();
     }
 
     public function getCall($endpoint, $data) 
@@ -263,104 +294,176 @@ class Sailthru_Implementation_Client {
         }
         return $response;
     }
+    
+
+    /*
+     * Credit to Chris at clwill dot com
+     * via php.net.
+     *
+     */
+    protected function setTimeZone() {
+        $timezone = $this->time_zone;
+        
+        // On many systems (Mac, for instance) "/etc/localtime" is a symlink
+        // to the file with the timezone info
+        if (is_link("/etc/localtime")) {
+            
+            // If it is, that file's name is actually the "Olsen" format timezone
+            $filename = readlink("/etc/localtime");
+            
+            $pos = strpos($filename, "zoneinfo");
+            if ($pos) {
+                // When it is, it's in the "/usr/share/zoneinfo/" folder
+                $timezone = substr($filename, $pos + strlen("zoneinfo/"));
+            } 
+        }
+        else {
+            // On other systems, like Ubuntu, there's file with the Olsen time
+            // right inside it.
+            if (file_exists("etc/timezone")) {
+                $timezone = file_get_contents("/etc/timezone");
+                if (!strlen($timezone)) {
+                    $timezone = $this->time_zone;
+                }
+            }
+        }
+        date_default_timezone_set($timezone);
+    }
+
+    private function confirm($question, $failText) {
+        CliScriptAbstract::confirm($question, $failText);
+    }
 
     /**
      * Full import process. Splits a file, validates it's fields, and and uploads in chunks. 
      *
-     * @param string $brand_name    :client or brand name used as identifier for directory creation
-     * @param string $file 
      * @param object $job           :job type w/ extra data. (list)/(json)
-     * @param string $base_dir      :directory to work out of. A folder (named after brand) is created to do actual import work in. Default is the folder of the import file.    
-     * @param string $split_size   
+     * @param string $params   
      */
     public function uploadFile($job, $params) {
-        if (is_array($params)) {
-            if (!isset($params["brand_name"])) {
-                throw new Exception("Missing the account/brand identifier: brand_name.");
-            } else {
-                $brand_name = $params["brand_name"];
-            }
-            if (!isset($params["file"])) {
-                throw new Exception("Missing Required Parameter: file.");
-            } else  {
-                $file = $params["file"];
-            }
-            $base_dir = isset($params["base_dir"])?$params["base_dir"]:null; 
-            $split_size = isset($params["split_size"])?$params["split_size"]:null; 
-            $is_skip_check = isset($params["is_skip_check"])?$params["is_skip_check"]:null; 
+        if ($job !== null) {
+            $this->job_data["job"] = $job;
         } else {
+            throw new Exception("Job type was null.");
+        }
+
+        if (!is_array($params)) {
             throw new Exception("uploadFile expects the second parameter to be an array.");
         }
-    	
-        print "\nUpload Details:\n";
 
-        $this->job_type = $job;
-        $this->time_of_run = time();
+        if (isset($params["brand_name"])) {
+            $this->business_name = $params["brand_name"];
+            unset($params["brand_name"]);
+        } else {
+            throw new Exception("Missing the account/brand identifier: brand_name.");
+        }
 
-        if (isset($params["list"])) {
-            $this->format = "csv";
-            $this->job_data["list"] = $params["list"];
-            echo "List set: ".$this->job_data["list"]."\n";
-        } else if (isset($params["file_type"])) {
-            $this->format = strtolower(trim($params["file_type"]));
+        if (isset($params["file"])) {
+            $this->file = $params["file"];
+            unset($params["file"]);
+        } else  {
+            throw new Exception("Missing Required Parameter: file.");
+        }
+
+        if (file_exists($this->file)) {
+            $info = pathinfo($this->file);
+            $this->file_core = basename($this->file,'.'.$info['extension']);
+        } else {
+            throw new Exception("File: ".$this->file." does not exist.");
+        }
+
+        if (isset($params["base_dir"])) {
+            $this->base_dir = $params["base_dir"]."/". $this->business_name."_Uploads";
+            unset($params["base_dir"]);
+        } else {
+            echo $this->file."\n";
+            echo dirname($this->file);
+            $this->base_dir = dirname($this->file)."/". $this->business_name."_Uploads";
+        }
+
+        if (isset($params["split_size"])) {
+            $this->chunk_mem_split = $params["split_size"];
+            unset($params["split_size"]);
+        }
+
+        if (isset($params["is_skip_check"])) {
+            $this->is_skip_check = $params["is_skip_check"];
+            unset($params["is_skip_check"]);
+            print "Error Checking and File Validation Disabled\n";
+        }
+
+        if (isset($params["file_type"])) {
+            if (in_array(strtolower(trim($params["file_type"])), $this->valid_formats)) {
+                $this->format = strtolower(trim($params["file_type"]));
+            } else {
+                $this->format = "unknown";
+            }
+            unset($params["file_type"]);
         } else {
             $this->format = "unknown";
-        }
-
-        if (file_exists($file)) {
-    		$this->file = $file;
-    	} else {
-    		throw new Exception("File: ".$file." does not exist.");
-    	}
-        print ucfirst($this->job_type)." with $file\n";
-
-        if ($base_dir != null) {
-    	   $this->base_dir = $base_dir;
-        } else {
-            $this->base_dir = dirname($file);
-        }
-
-        print "Upload data stored to ".$this->base_dir."\n";
-
-        if ($split_size != null) {
-    	   $this->chunk_mem_split = $split_size;
-        }
-
-        if ($is_skip_check != null) {
-           $this->is_skip_check = $is_skip_check;
-            print "Error Checking and File Validation Disabled\n";
         }
 
         if (isset($params["report_email"])) {
             $this->notify_email = $params["report_email"];
         }
 
-    	$this->business_name = $brand_name;
+        $this->time_of_run = date("Y_m_d_Hi");
+
+        $this->file_dir = $this->base_dir."/".$this->job_data["job"]."_".$this->file_core."_".$this->time_of_run;
+
+        $api_log_path = $this->file_dir."/api_log_".$this->file_core."_".$this->time_of_run.".log";
+
+        $api_log_str = "";
+
+        $this->job_data = $this->job_data + $params;
+
+
+        print "\nUpload Details:\n";
+        $api_log_str .= "\nUpload Details:\n";
+        
+        if (isset($params["list"])) {
+            echo "List set: ".$params["list"]."\n"; 
+            $api_log_str .= "List set: ".$params["list"]."\n";
+        } 
+
+        print ucwords($this->job_data["job"], " _")." with ".$this->file."\n";
+        $api_log_str .= ucfirst($this->job_data["job"])." with ".$this->file."\n";
+
+        print "Upload data stored to ".$this->base_dir."\n";
+        $api_log_str .= "Upload data stored to ".$this->base_dir."\n";
 
         $bytes_to_megabytes = 1000000;
         print "Splitting files into ".($this->chunk_mem_split/$bytes_to_megabytes)."mb chunks\n\n";
+        $api_log_str .= "Splitting files into ".($this->chunk_mem_split/$bytes_to_megabytes)."mb chunks\n\n";
 
-    	$this->createDirectories();
+        $api_log_str = $this->createDirectories($api_log_str);
         
-        //Supply a map for csv to json. Not functional yet.
-    	$data = array();
-	    if (isset($params["json"])) {
-    		$data["json"] = $params["json"];
-		} 
+        $api_log = $this->openFile($api_log_path, "w");
+        fwrite($api_log, $api_log_str);
 
         print "Preprocessing File\n";
-        //split and convert file. Conversion not built yet. 
-    	try {
-            $this->processFile($data);
+        fwrite($api_log, "Preprocessing File\n");
+        
+        try {
+            $this->processFile($api_log);
         } catch (Exception $e) {
+            fwrite($api_log, print_r($e, true));
             throw $e;
         }
-    	
-        print "Starting File Upload\n";
-        
-        $this->notify($this->notify_templates["start"], $file);
 
-        $this->uploadFiles();
+        print "Starting File Upload\n";
+        fwrite($api_log, "Starting File Upload\n");
+        
+        $this->notify($this->notify_templates["start"], $this->file);
+
+        try {
+            $result = $this->uploadFiles($api_log);
+        } catch (Exception $e) {
+            fwrite($api_log, print_r($e, true));
+            throw $e;
+        }
+
+        return $result;
     }
 
     //Open a file and assure it doesn't fail. 
@@ -375,35 +478,33 @@ class Sailthru_Implementation_Client {
      * Creates the underlying file structure to enable a clean upload. 
      *
      */
-    protected function createDirectories() { 
-    	$business_name = $this->business_name;
-    	$base_dir = $this->base_dir ."/". $business_name."_Uploads";
-        $info = pathinfo($this->file);
-        $file_dir = $base_dir."/".basename($this->file,'.'.$info['extension'])."_".$this->time_of_run;
-    	$this->upload_dir = $upload_dir = $file_dir . "/upload";
+    protected function createDirectories($api_log_str) { 
+    	$base_dir = $this->base_dir;
+        $file_dir = $this->file_dir;
+        $this->upload_dir = $upload_dir = $file_dir . "/upload";
     	$this->error_dir = $error_dir = $file_dir . "/error";
         
         print "Creating Directories\n";
+        $api_log_str .= "Creating Directories\n";
+
 		if ((file_exists($base_dir)) || (mkdir($base_dir) !== false)) {
     		if (file_exists($file_dir) || mkdir($file_dir) !== false) {
                 if (file_exists($upload_dir) || mkdir($upload_dir) !== false) {
     			} else {
-                    echo "3 \n";
-        			throw new Exception("Unable to make the upload directory for ".$business_name.".");
+        			throw new Exception("3: Unable to make the upload directory for ".$business_name.".");
         		}
         		if (file_exists($error_dir) || mkdir($error_dir) !== false) {
     			} else {
-                        echo "4 \n";
-    	    			throw new Exception("Unable to make the error directory for ".$business_name.".");
+    	    			throw new Exception("4: Unable to make the error directory for ".$business_name.".");
     	   		}	
             } else {
-                echo "1 \n";
-                throw new Exception("Unable to make the base directory for ".$business_name.".");
+                throw new Exception("2: Unable to make the base directory for ".$business_name.".");
             }
 		} else {
-            echo "1 \n";
-			throw new Exception("Unable to make the base directory for ".$business_name.".");
+			throw new Exception("1: Unable to make the base directory for ".$business_name.".");
     	}
+
+        return $api_log_str;
     }
 
     protected function validateEmail($address) {
@@ -430,72 +531,70 @@ class Sailthru_Implementation_Client {
         return true;
     }
 
-    protected function checkFileType($main_file) {
-        if (($char = fgetc($main_file)) !== FALSE) {
-            if ($char == "{") {
-                $format = "json";
-            } else {
-                $format = "csv";
+    protected function checkFile($main_file, $format, $is_skip_check) {
+        if (($line = fgets($main_file)) !== FALSE) {
+            if ($format == "unknown") {
+                $char = $line[0];
+                if ($char == "{") {
+                    $format = "json";
+                } else {
+                    $format = "csv";
+                }
+                $this->confirm("Infering File is a ".$format." file.\nContinue?", "Provide file_type to set the format.");
+            }
+            if ($is_skip_check) {
+                return $format;
+            }
+            if (!mb_check_encoding($line, "UTF-8")) {
+                throw new Exception("File needs to be UTF8.");
             }
         } else {
             throw new Exception("The file cannot be read.");
         }
         rewind($main_file);
-        Print "Infering File is a ".$format." file.\n";
         return $format;
     }
 
-    protected function processFile($data) {
-        $format = $this->format;
-        $encoding_check = true;
+    protected function processFile($api_log) {
         $file = $this->file;
-    	$business_name = $this->business_name;
-    	$upload_dir = $this->upload_dir;
-    	$chunk_mem_split = $this->chunk_mem_split;
+        $format = $this->format;
+        $upload_dir = $this->upload_dir;
+        $chunk_mem_split = $this->chunk_mem_split;
+        $day = $this->time_of_run;
+        $is_skip_check = $this->is_skip_check;
+
+        $row = 0;
+        $encoding_check = true;
     	$sub_file_num = 1;
-    	$current_mem_sub_file = 0;
-    	$day = $this->time_of_run;
+    	$current_mem_sub_file = 0;   	
     	$HEADER_ROW = 0;
-    	$header = [];
         $headerArray = array();
-    	$row = 0;
-    	$log_invalids = $is_skip_check?false:true;
+    	$log_invalids = !$is_skip_check;
 
         $main_file = $this->openFile($file, "r");
 
-        if ($format == "unknown") {
-            $format = $this->checkFileType($main_file);
-            $this->format = $format;
-        }
-    	$error_file = $this->openFile($this->error_dir ."/invalids_".$business_name."_".$day.".".$format, "w");
-    	$sub_file = $this->openFile($upload_dir."/".$business_name."_".$sub_file_num."_".$day.".".$format, "w");
+        $format = $this->checkFile($main_file, $format, $is_skip_check);
+
+    	$error_file = $this->openFile($this->error_dir ."/invalids_".$this->file_core."_".$day.".".$format, "w");
+        $sub_file = $this->openFile($upload_dir."/".$this->file_core."_".$sub_file_num."_".$day.".".$format, "w");
 		$sub_file_num += 1;
 
 		$isError = false;
-        //print "Reading in data\n";
+
 		while (($line = fgets($main_file)) !== FALSE) {
 
-			$data = str_getcsv($line);
-
-            // VALIDATION????
-            if ($this->job_type == "import") {
+            // VALIDATION
+            if ($this->file_type == "csv") {
+                $data = str_getcsv($line);
     			foreach ($data as $i => $field) {
     				if ($row == $HEADER_ROW) {
-    					if ($encoding_check && !$is_skip_check && !mb_check_encoding($line, "UTF-8")) {
-                            fclose($error_file);
-                            fclose($sub_file);
-                            unlink($this->error_dir ."/invalids_".$business_name."_".$day.".".$format);
-                            unlink($upload_dir."/".$business_name."_".($sub_file_num-1)."_".$day.".".$format);
-    						throw new Exception("File needs to be UTF8.");
-    					} else {
-                            $encoding_check = false;
-    						$header_memory = strlen($line);
-    					}
+						$header_memory = strlen($line);
     					if (!$is_skip_check && $i == 0 && (strtolower(trim($field)) != "email" && strtolower(trim($field)) != "extid")) {
                             fclose($error_file);
                             fclose($sub_file);
-                            unlink($this->error_dir ."/invalids_".$business_name."_".$day.".".$format);
-                            unlink($upload_dir."/".$business_name."_".($sub_file_num-1)."_".$day.".".$format);
+                            //unlink deletes the file. 
+                            unlink($this->error_dir ."/invalids_".$this->file_core."_".$day.".".$format);
+                            unlink($upload_dir."/".$this->file_core."_".($sub_file_num - 1)."_".$day.".".$format);
                             throw new Exception("The first column needs to be 'email' or 'extid'.");
     					}
     					$headerArray[$i] = $field;
@@ -510,19 +609,14 @@ class Sailthru_Implementation_Client {
     					}
     				}
     			} //Loop to next field
-            }  else {
-                foreach ($data as $i => $field) {
-                    if ($encoding_check && !$is_skip_check && !mb_check_encoding($line, "UTF-8")) {
-                        fclose($error_file);
-                        fclose($sub_file);
-                        unlink($this->error_dir ."/invalids_".$business_name."_".$day.".".$format);
-                        unlink($upload_dir."/".$business_name."_".($sub_file_num-1)."_".$day.".".$format);
-                        throw new Exception("File needs to be UTF8.");
-                    } else {
-                        $encoding_check = false;
-                        $header_memory = strlen($line);
-                    }
-                } //Loop to next field
+            } else if ($this->file_type == "json") {
+                $data = json_decode($line, true);
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    $isError = true;
+                } else if (isset($data["email"]) && !$this->validateEmail($data["email"])) {
+                    $isError = true;
+                }
+                $line;
             }
 
 			if ($isError && $log_invalids) {
@@ -532,17 +626,20 @@ class Sailthru_Implementation_Client {
 
 			if (($current_mem_sub_file + strlen($line)) > $chunk_mem_split) {
 				fclose($sub_file);
-                $sub_file_size = filesize($upload_dir."/".$business_name."_".($sub_file_num - 1)."_".$day.".".$format);
+                $sub_file_size = filesize($upload_dir."/".$this->file_core."_".($sub_file_num - 1)."_".$day.".".$format);
                 if ($sub_file_size > $chunk_mem_split) {
                     throw new Exception("Split files are larger than expected. Check encoding?");
                 }
-				$sub_file = $this->openFile($upload_dir."/".$business_name."_".$sub_file_num."_".$day.".".$format, "w");
-    			++$sub_file_num;
-                if ($this->job_type == "import") {
+				$sub_file = $this->openFile($upload_dir."/".$this->file_core."_".$sub_file_num."_".$day.".".$format, "w");
+    			fwrite($api_log, "Split file ".$sub_file_num." created.\n");
+                $sub_file_num += 1;
+
+                $current_mem_sub_file = 0;
+
+                if ($this->file_type == "csv") {
                     fwrite($sub_file, $header_line);
+                    $current_mem_sub_file = $header_memory;
                 }   
-    			$current_mem_sub_file = $header_memory;
-                //print $sub_file_num." File created\n";
 			}
 
 			$current_mem_sub_file += strlen($line);
@@ -551,60 +648,68 @@ class Sailthru_Implementation_Client {
             $row += 1;  
 	    } //Loop to next line	
         print "File split into ".($sub_file_num - 1)." files.\n";
+        fwrite($api_log, "File split into ".($sub_file_num - 1)." files.\n");
 	    fclose($sub_file);
 		fclose($main_file);
     }
 
     //TBF
-    protected function validateImportFile() {
+    protected function validateCSVFile() {
 
     }
 
-    protected function validateUpdateFile() {
+    protected function validateJSONFile() {
        
     }
 
-    protected function uploadFiles() {
-    	$retry_limit = $this->retry_limit;
-    	$SUCCESS_INDICATOR = 10; //arbitrary constant to indicate didn't need to retry api call.
+    protected function uploadFiles($api_log) {
+        $data = $this->job_data; //Full Data for the API call
+        $job = $this->job_data["job"];
+        $dir = $this->upload_dir;
+        $retry_limit = $this->retry_limit;
+        $simultaneous_uploads = $this->simultaneous_uploads;
+
+        $running_jobs = array();
+
+        $retry_files_path = $this->file_dir."/retry_files_".$this->file_core."_".$this->time_of_run.".log";
+    	$error_files_path = $this->file_dir."/error_files_".$this->file_core."_".$this->time_of_run.".log";
+        $SUCCESS_INDICATOR = 10; //arbitrary constant to indicate didn't need to retry api call.
     	$SLEEP_TIME = 120; //seconds
         $still_sleeping = false;
-        $simultaneous_uploads = $this->simultaneous_uploads;
-        $job = $this->job_type;
-        $job_data = $this->job_data;
-        $data = array('job' => $job);
-
-    	$dir = $this->upload_dir;
+        $uploading = true;
+        $count_upload_success = 0;
+        $count_upload_errors = 0;
+        $count_upload_failures = 0;
+	
     	if (!is_dir($dir)) {
     		throw new Exception("There is no upload directory.");	
     	}
 		if (($dh = opendir($dir)) === false) {
-			throw new Exception("Unable to open the split file's directory.");
+			throw new Exception("Unable to open the file's subfiles directory.");
 		}
 
-		$running_jobs = array();
-		$uploading = true;
+        fwrite($api_log, "\n\nRecord of every upload attempt plus full response.\n");
+        $retry_files = $this->openFile($retry_files_path, "w");
+        $error_files = $this->openFile($error_files_path, "w");
 
         while ($uploading) {
-            //echo"entering import/update\n";
+            //Try to get another file for upload if the current running number is below the throttle limit.
         	if (count($running_jobs) < $simultaneous_uploads) {
                 if ($still_sleeping) {
                     $still_sleeping = false;
                     print "\n";
                 }
-                //echo"Run another job\n";
+                //Try to find another file in the directory.
         		if (($file = readdir($dh)) !== false) {
+                    //Skip default . and .. files
                     if (strpos($file, ".") === 0) {
                         continue;
                     }
 
-                    echo"Pulled $file from dir\n";
+                    echo"\nPulled $file from dir\n";
 
                     $data['file'] = $this->upload_dir."/".$file;
-                    if ($job == "import") {
-                        //echo"Doing an import\n";
-                        $data['list'] = $job_data["list"];
-                    }
+
         			//upload file
         			$retry = 0;
         			while ($retry < $retry_limit) {
@@ -616,22 +721,46 @@ class Sailthru_Implementation_Client {
 							++$retry;
                             if ($retry == $retry_limit) {
                                 $fail_e = $e;
+                                $fail_message = $e->getMessage();
                             }
 						}
 					}
 					if ($retry == $SUCCESS_INDICATOR && !isset($response["error"])) {
                         $tmp_id = $response["job_id"];
+                        //add job_id to $running jobs
+                        $running_jobs[$tmp_id] = time();
+                        $count_upload_success += 1;
                         print "$file succesfully uploaded: ID ".$tmp_id."\n";
-						//add job_id to $running jobs
-						$running_jobs[$tmp_id] = time();
+					    fwrite($api_log, "\n$file succesfully uploaded: ID ".$tmp_id."\n");
+                        fwrite($api_log, print_r($response, true));
 					} else if (isset($response["error"])) {
-                        var_dump($response);
+                        $count_upload_errors += 1;
+                        print "ERROR WITH ".$file.": ".$response["errormsg"]."\n";
+                        fwrite($api_log, "\nERROR WITH ".$file.": ".$response["errormsg"]."\n");
+                        fwrite($api_log, print_r($response, true));
+                        fwrite($error_files, $data["file"]."\n");
                     } else {
-                        var_dump($fail_e);
-						//Log issue.
+                        $count_upload_failures += 1;
+                        print "FAILURE WITH ".$file.": ".$fail_message."\n";
+                        fwrite($api_log, "\nFAILURE WITH ".$file.": ".$fail_message."\n");
+                        fwrite($api_log, print_r($fail_e, true));
+                        fwrite($retry_files, $data["file"]."\n");
 					}
         		} else {
-                    print "All Files Transfered, waiting for remaining jobs to finish.\n";
+                    if ($count_upload_errors == 0 && $count_upload_failures == 0) {
+                        unlink($retry_files_path);
+                        unlink($error_files_path);
+                        print "All Files Successfully Uploaded.\n";
+                    } else if ($count_upload_failures == 0) {
+                        unlink($retry_files_path);
+                        print "All Files Uploaded.\n";
+                    } else if ($count_upload_errors == 0) {
+                        unlink($error_files_path);
+                        print "All Files Attempted.\n";
+                    } else {
+                        print "All Files Attempted.\n";
+                    }
+                    fwrite($api_log, "All Files Attempted");
         			$uploading = false;
         		}
         	} else {
@@ -646,14 +775,29 @@ class Sailthru_Implementation_Client {
 		closedir($dh);
 
         //FAIR QUEUE edits mean we can drop as many jobs in an account as we want now. So,
-        //this finishing code is doubly extraneous. I've set a magic check of 1K simultaneous
-        //jobs to indicate the hack I've put in place to quickly get around my throttling code.
-        while (count($running_jobs) > 0 && $simultaneous_uploads > 1000) {
+        //this finishing code is doubly extraneous. I've set a magic check of 500 simultaneous
+        //jobs to indicate I'm running a lot of jobs as once and don't want this to wait.
+        while (count($running_jobs) > 0 && $this->is_monitor_jobs) {
+            if ($uploading == false) {
+                print "Waiting for remaining jobs to finish.\n";
+                fwrite($api_log, "Waiting for remaining jobs to finish.\n");
+                //This may not be the best solution, but its a now abandoned boolean that serves nicely to give a one time message. I don't want any more booleans.
+                $uploading = true; 
+            }
             print "sleep, ";
+            $still_sleeping = true;
             sleep($SLEEP_TIME);
             $running_jobs = $this->isFinished($running_jobs);
         }
+        if ($still_sleeping) {
+            print "\n";
+        }
         print "\n";
+
+        $result = array("Successful Uploads" => $count_upload_success, "Error Response" => $count_upload_errors, "Failed to Upload" => $count_upload_failures);
+        fwrite($api_log, print_r($result, true));
+
+        return $result;
     }
 
     protected function isFinished($jobs) {
@@ -680,8 +824,7 @@ class Sailthru_Implementation_Client {
 					}
 					$retry = $SUCCESS_INDICATOR;
 				} catch (Exception $e) {
-                    echo "Retry Check on $id\n";
-					++$retry;
+					$retry += 1;
 				}
 			}
             $retry = 0;
