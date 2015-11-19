@@ -59,8 +59,8 @@ class Sailthru_Client {
     private $httpHeaders = array("User-Agent: Sailthru API PHP5 Client");
 
     private $options = array(
-        'timeout' =>         2000,  // timeout, in milliseconds
-        'connect_timeout' => 2000,  // connection timeout, in milliseconds
+        'timeout' =>         15000,  // timeout, in milliseconds
+        'connect_timeout' => 10000,  // connection timeout, in milliseconds
     );
 
 

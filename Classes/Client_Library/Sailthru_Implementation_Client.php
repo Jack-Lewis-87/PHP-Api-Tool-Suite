@@ -220,6 +220,7 @@ class Sailthru_Implementation_Client {
         $fail = 0; //Failure counter
         do  //Loop around the actual call as a retry mechanism in case it fails. 
         {
+            echo date("hh:mm:ss")."\n";
             try 
             { 
                 $response = $this->client->apiGet($endpoint, $data);
@@ -241,6 +242,7 @@ class Sailthru_Implementation_Client {
         $fail = 0; //Failure counter
         do  //Loop around the actual call as a retry mechanism in case it fails. 
         {
+            echo date("hh:mm:ss")."\n";
             try 
             { 
                 $response = $this->client->apiPost($endpoint, $data);
@@ -262,6 +264,7 @@ class Sailthru_Implementation_Client {
         $fail = 0; //Failure counter
         do  //Loop around the actual call as a retry mechanism in case it fails. 
         {
+            echo date("hh:mm:ss")."\n";
             try 
             { 
                 $response = $this->client->apiDelete($endpoint, $data);
@@ -452,7 +455,7 @@ class Sailthru_Implementation_Client {
         print "Starting File Upload\n";
         fwrite($api_log, "Starting File Upload\n");
         
-        $this->notify($this->notify_templates["start"], $this->file);
+        // $this->notify("start", $this->file);  //REMOVING NOTIFICATIONS I WOULD LIKE TO BUILD THIS BACK IN. WOULD NEED TO CREATE A SHELL TEMPLATE PRIOR TO MAKING THE NOTIFY THOUGH.
 
         try {
             $result = $this->uploadFiles($api_log);
@@ -749,17 +752,18 @@ class Sailthru_Implementation_Client {
                     if ($count_upload_errors == 0 && $count_upload_failures == 0) {
                         unlink($retry_files_path);
                         unlink($error_files_path);
-                        print "All Files Successfully Uploaded.\n";
+                        print "\nAll Files Successfully Uploaded.\n";
                     } else if ($count_upload_failures == 0) {
                         unlink($retry_files_path);
-                        print "All Files Uploaded.\n";
+                        print "\nAll Files Uploaded.\n";
                     } else if ($count_upload_errors == 0) {
                         unlink($error_files_path);
-                        print "All Files Attempted.\n";
+                        print "\nAll Files Attempted.\n";
                     } else {
-                        print "All Files Attempted.\n";
+                        print "\nAll Files Attempted.\n";
                     }
                     fwrite($api_log, "All Files Attempted");
+                    echo "Full API log with responses saved to: ".$api_log_path."\n";
         			$uploading = false;
         		}
         	} else {
@@ -816,7 +820,7 @@ class Sailthru_Implementation_Client {
  					$response = $this->client->getJobStatus($id);
 					if ($response["status"] != "completed") {
 						if ((time() - $time_stamp) > $stallLimit) {
-							$this->notify($this->$notify_template["fail"], $id);
+							// $this->notify("fail", $id); //REMOVING NOTIFICATIONS I WOULD LIKE TO BUILD THIS BACK IN. WOULD NEED TO CREATE A SHELL TEMPLATE PRIOR TO MAKING THE NOTIFY THOUGH.
 						} else {
 							$still_active[$id] = $time_stamp;
 						}
@@ -840,7 +844,9 @@ class Sailthru_Implementation_Client {
         while ($retry < $retry_limit) {
             try {
                 $response = $this->client->send($template, $email, array("var" => $var)); 
-                return;
+                if (!isset($response["error"])) {
+                    return;
+                }
             } catch (Exception $e) {
                 ++$retry;
             }
