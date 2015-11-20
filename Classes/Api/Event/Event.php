@@ -1,8 +1,8 @@
 <?php
 
-include(dirname(__DIR__)."/Api_Call_Abstract.php");        
+include(dirname(__DIR__)."/ApiCallAbstract.php");        
 
-class Event extends Api_Call_Abstract {
+class Event extends ApiCallAbstract {
 
     /*
      * Endpoint
