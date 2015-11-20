@@ -11,20 +11,24 @@ include($client_file);
 $file_access = "w";
 
 if (file_exists($cred_file)) {
-	$exit = 1;
-	print "A Key and Secret file already exists. Do you want to change your default account, add a new account, or skip this step and refresh bash scripts?\n(edit/add/skip)\n";
-	$answer = readline();
-	if ($answer == "add") 
-	{
-		$edit_mode = "add";
-	} else if ($answer == "edit") {
-		$edit_mode = "edit";
-	} else if ($answer == "skip") {
-		exit(2);
+	if (filesize($cred_file) < 900) {
+		echo "Your Key and Secret file wasn't completed or has been currupted. Lets create it again.\n\n";
 	} else {
-		die("That isn't a valid option, please run SetupApiAccounts.sh again.\n");
+		$exit = 1;
+		print "A Key and Secret file already exists. Do you want to change your default account, add a new account, or skip this step and refresh bash scripts?\n(edit/add/skip)\n";
+		$answer = readline();
+		if ($answer == "add") 
+		{
+			$edit_mode = "add";
+		} else if ($answer == "edit") {
+			$edit_mode = "edit";
+		} else if ($answer == "skip") {
+			exit(2);
+		} else {
+			die("That isn't a valid option, please run SetupApiAccounts.sh again.\n");
+		}
+		$file_access = "r";
 	}
-	$file_access = "r";
 } else {
 	print "Lets set up your default API Key and Secret.\n\n";
 }

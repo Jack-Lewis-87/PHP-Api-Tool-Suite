@@ -14,7 +14,7 @@ these comment markers
 */
 
 ////////////////////////////////////////////////////////////////////////////////
-/*
+
 //Title: Demo 1
 //Use Case: Initiate an event named "PHP Demo"
 //Status: Working
@@ -25,17 +25,11 @@ $account_credentials->setAccountById(4627);
  
 //Vars
 
-$api_object->setVar("event","PHP Demo");
+$api_object->setVar("event","php_demo");
 $api_object->setVar("id", "jlewis@sailthru.com");
 
-$vars = array(
-	"first" => "Jack",
-	"last" => "Lewis",
-	"related_sku" => "235ac35",
-	);
 
-$api_object->setVar("vars", $vars);
-*/
+
 
 
 ////////////////////////////////////////////////////////////////////////////////
