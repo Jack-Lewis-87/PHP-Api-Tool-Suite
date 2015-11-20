@@ -14,18 +14,29 @@ these comment markers
 */
 
 ////////////////////////////////////////////////////////////////////////////////
+/*
 //Title: Demo 1
-//Use Case: Create Profiles using Email.
-//Status: Isn't creating profiles I can find. 
+//Use Case: Initiate an event named "PHP Demo"
+//Status: Working
+
 //Client: Jack's Test Account
-/*
+
 $account_credentials->setAccountById(4627);
-*/ 
+ 
 //Vars
-/*
-$api_object->setVar("id","jlewis@sailthru.com");
-$api_object->setVar("key", "extid");
+
+$api_object->setVar("event","PHP Demo");
+$api_object->setVar("id", "jlewis@sailthru.com");
+
+$vars = array(
+	"first" => "Jack",
+	"last" => "Lewis",
+	"related_sku" => "235ac35",
+	);
+
+$api_object->setVar("vars", $vars);
 */
+
 
 ////////////////////////////////////////////////////////////////////////////////
 //Title: Demo Example 2
