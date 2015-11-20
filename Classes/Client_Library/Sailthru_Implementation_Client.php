@@ -220,7 +220,6 @@ class Sailthru_Implementation_Client {
         $fail = 0; //Failure counter
         do  //Loop around the actual call as a retry mechanism in case it fails. 
         {
-            echo date("hh:mm:ss")."\n";
             try 
             { 
                 $response = $this->client->apiGet($endpoint, $data);
@@ -242,7 +241,6 @@ class Sailthru_Implementation_Client {
         $fail = 0; //Failure counter
         do  //Loop around the actual call as a retry mechanism in case it fails. 
         {
-            echo date("hh:mm:ss")."\n";
             try 
             { 
                 $response = $this->client->apiPost($endpoint, $data);
@@ -264,7 +262,6 @@ class Sailthru_Implementation_Client {
         $fail = 0; //Failure counter
         do  //Loop around the actual call as a retry mechanism in case it fails. 
         {
-            echo date("hh:mm:ss")."\n";
             try 
             { 
                 $response = $this->client->apiDelete($endpoint, $data);
