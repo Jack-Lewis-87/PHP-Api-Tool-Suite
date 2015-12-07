@@ -37,5 +37,5 @@ $account_credentials->setAccountById(4627);
 */ 
 //Vars
 
-// $api_object->setVar("id_key","jlewis@sailthru.com");
+// $api_object->setVar("id","jlewis@sailthru.com");
 

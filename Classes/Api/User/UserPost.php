@@ -29,7 +29,7 @@ class UserPost extends User {
         "vars" => ["vars", "User Var: Add a custom user var. Input a JSON object or enter each var name prepended with \"var_\" eg: var_first=jack."],
         "lists" => ["lists", "Lists: Add or remove users from list. Input a JSON object or enter each list name prepended with \"list_\" eg list_master=1."],
         "keys" => ["keys", "Keys: Add or Edit user keys. Input a JSON object or enter each key prepended with \"key_\" eg key_extid=123ab."],
-        "keysconfict" => ["keysconflict", "Conflict: If you change keys to existing keys, you create a conflict. Resolve with \"error\" or \"merge\""],
+        "keysconflict" => ["keysconflict", "Conflict: If you change keys to existing keys, you create a conflict. Resolve with \"error\" or \"merge\""],
         "optout_email" => ["optout", "Optout: Set Optout Status -- \"none\", \"valid\", \"all\", \"basic\", \"blast\""],
         "optout_templates" => ["optout_templates", "Template Optout: Opt a user in or out of a template (0 or 1). Enter template name prepended with \"template_\""],
         "cookies" => ["cookies", "Cookies: Convert the stored browser session data into user profile data. JSON or prepend \"cookie_\""],

@@ -11,6 +11,7 @@ include($client_file);
 $file_access = "w";
 
 if (file_exists($cred_file)) {
+	//Bit of a hack to make sure the credential file was completely created. If it wasn't 
 	if (filesize($cred_file) < 900) {
 		echo "Your Key and Secret file wasn't completed or has been currupted. Lets create it again.\n\n";
 	} else {
@@ -27,15 +28,17 @@ if (file_exists($cred_file)) {
 		} else {
 			die("That isn't a valid option, please run SetupApiAccounts.sh again.\n");
 		}
-		$file_access = "r";
+		if (($creds = fopen($cred_file, "r")) === FALSE) {
+	    	throw new Exception("Unable to open ".$cred_file);   
+		}
 	}
 } else {
 	print "Lets set up your default API Key and Secret.\n\n";
+	if (($creds = fopen($cred_file, "w")) === FALSE) {
+    	throw new Exception("Unable to open ".$cred_file);   
+	}
 }
 
-if (($creds = fopen($cred_file, $file_access)) === FALSE) {
-    throw new Exception("Unable to open ".$cred_file);   
-}
 
 if ($edit_mode == "add") {
 	$account_ref = "the new";

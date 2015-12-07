@@ -19,11 +19,11 @@ these comment markers
 //Status: TBD
 //Client: Steve Does it all
 
-$account_credentials->setAccountById(4788);
+// $account_credentials->setAccountById(4788);
  
 //Vars
 
-$api_object->setVar("url","http://www.stevedoesitall.com/this/page/isnt/real.html");
+// $api_object->setVar("url","http://www.stevedoesitall.com/this/page/isnt/real.html");
 // $api_object->setVar("", "extid");
 
 

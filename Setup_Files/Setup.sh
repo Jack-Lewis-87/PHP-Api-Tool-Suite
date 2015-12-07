@@ -5,6 +5,7 @@ if [ -z "$STRUCT" ] ; then
   echo "Failed to run successfully. Go ask a dev or jlewis@sailthru.com."
   exit 1  # fail
 fi
+
 PARENT="$(dirname "$STRUCT")"
 SCRIPTBASE="$PARENT/Bash_Scripts/"
 PATHBASE="$PARENT/Bash_Scripts"

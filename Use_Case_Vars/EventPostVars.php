@@ -14,7 +14,7 @@ these comment markers
 */
 
 ////////////////////////////////////////////////////////////////////////////////
-
+/*
 //Title: Demo 1
 //Use Case: Initiate an event named "PHP Demo"
 //Status: Working
@@ -27,7 +27,7 @@ $account_credentials->setAccountById(4627);
 
 $api_object->setVar("event","php_demo");
 $api_object->setVar("id", "jlewis@sailthru.com");
-
+*/
 
 
 

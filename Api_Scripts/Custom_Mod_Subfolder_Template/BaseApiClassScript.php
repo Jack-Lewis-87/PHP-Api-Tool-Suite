@@ -2,27 +2,33 @@
 // Base Script to be copied then modified.
 //											COPY THEN MODIFY
 
-require_once(dirname(__DIR__)."/Classes/Api/Account_Credentials/KeysAndSecrets.php"); 	
+$call = "List";
+$method = "Get";
+
+
+$call_type = $call.$method;
+
+require_once(dirname(dirname(__DIR__))."/Classes/Api/Account_Credentials/KeysAndSecrets.php"); 	
 $account_credentials = new KeysAndSecrets();
 $account_credentials->setAccount();
 
 
 
 //START CALL SPECIFIC 
-require_once(dirname(__DIR__)."/Classes/Api/List/ListGet.php");				//Call Specifc//Incomplete//
+require_once(dirname(dirname(__DIR__))."/Classes/Api/List/ListGet.php");				//Call Specifc//Incomplete//
 $api_object = new ListGet();												//Call Specifc//Incomplete//
 $api_object->setAccount($account_credentials);
-include_once(dirname(__DIR__)."/Use_Case_Vars/ListGetVars.php");			//Call Specifc//Incomplete//		
+include_once(dirname(dirname(__DIR__))."/Use_Case_Vars/ListGetVars.php");			//Call Specifc//Incomplete//		
 //END CALL SPECIFIC 
 
 
 
-require_once(dirname(__DIR__)."/Classes/CliScriptAbstract.php");	
+require_once(dirname(dirname(__DIR__))."/Classes/CliScriptAbstract.php");	
 $script = new CliScriptAbstract();	
 
-require_once(dirname(__DIR__)."/Classes/Client_Library/Sailthru_Implementation_Client.php");
+require_once(dirname(dirname(__DIR__))."/Classes/Client_Library/Sailthru_Implementation_Client.php");
 
-include_once(dirname(__DIR__)."/Setup_Files/ScriptSettings.php");			
+include_once(dirname(dirname(__DIR__))."/Setup_Files/ScriptSettings.php");			
 new ScriptSettings();
 
 ////////////////////   VARS 
@@ -99,7 +105,7 @@ if ((CliScriptAbstract::$flags["isVerbose"] || CliScriptAbstract::$flags["isInte
 	}
 	print "Key: ".$account_credentials->getKey()."\n";
 	print "Secret: ".$account_credentials->getSecret()."\nValues:";
-	print_r($call_data);
+	print json_encode($call_data, JSON_PRETTY_PRINT)."\n";
 
 	if (CliScriptAbstract::$flags["isInteractive"]){
 		//Confirm + screen output if user decides to kills the script.
@@ -114,7 +120,7 @@ $response = $client->$method($endpoint, $call_data);
 		
 ////Status Output						
 if (!CliScriptAbstract::$flags["isQuiet"] && !CliScriptAbstract::$flags["isSilent"]) {
-	print_r($response);
+	print json_encode($response, JSON_PRETTY_PRINT)."\n";
 }
 CliScriptAbstract::$flags["isSilent"]?:print"\nFinished\n";
 
