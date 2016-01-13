@@ -24,7 +24,7 @@ class KeysAndSecrets extends DefaultKeysAndSecrets
 		if ($key == null || $key == "default") {
 			KeysAndSecrets::setDefaults();
 		} else if (is_numeric($key)) {
-			KeysAndSecrets::setClientById($key);
+			KeysAndSecrets::setAccountById($key);
 		} else {
 			KeysAndSecrets::setKeySecret($key, $secret, $name, $id);
 		}
@@ -83,4 +83,15 @@ class KeysAndSecrets extends DefaultKeysAndSecrets
 			return KeysAndSecrets::$id;
 		}
 	} 
+
+	public static function printClients() {
+		foreach (KeysAndSecrets::$clients as $key => $value) {
+			print $key.": ".$value["name"]."\n";
+		}
+		die();
+	}
+
+	public static function getCurrentAccount() {
+		return array("id" => KeysAndSecrets::$number, "name" => KeysAndSecrets::$name, "key" => KeysAndSecrets::$key, "secret" => KeysAndSecrets::$secret);
+	}
 }

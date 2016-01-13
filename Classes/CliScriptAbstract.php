@@ -20,7 +20,7 @@ class CliScriptAbstract {
     	"--bash" => ["isBashHelp",true],
     	"--help" => ["isHelp",true],
     	"help" => ["isHelp",true],
-    	"-c" => ["isHelp",true],
+    	"-c" => ["isHelp",true], 
     );
 
     /*
@@ -46,7 +46,8 @@ class CliScriptAbstract {
     public static $vars = array();
 
 
-    public function confirm($question, $failText) {
+    public function confirm($question, $failText, $kill = true) {
+    	$response = true;
 		if (CliScriptAbstract::$flags["isSuppressConfirm"] || CliScriptAbstract::$flags["isSilent"]) {
 			return;
 		}
@@ -54,8 +55,15 @@ class CliScriptAbstract {
 		$answer = readline();
 		if ($answer != "y" && $answer != "yes") 
 		{
-			die($failText."\n");
+			if ($kill) {
+				die($failText."\n");
+			} else {
+				$response = false;
+				print $failText."\n";
+			}
+			
 		}
+		return $response;
 	}
 
 	/*	
@@ -149,8 +157,8 @@ class CliScriptAbstract {
 			$i = 0;
 			if (CliScriptAbstract::$flags["isColor"]) {
 				$color1 = "0";	//Black = "0;30"
-				$color2 = "0";	//Blue = "0;34"
-				$color3 = "0;30m\033[47";	//Black "0;30" on Light Grey "47"
+				$color2 = "0;30m\033[47";	//Black "0;30" on Light Grey "47"
+				$color3 = "0";	//Blue = "0;34"
 			} else {
 				$color1 = $color2 = $color3 = "0";
 			}

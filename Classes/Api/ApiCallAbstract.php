@@ -85,6 +85,7 @@ class ApiCallAbstract implements CliScriptInterface {
         "-q" => ["isQuiet", "not print the response text to the terminal."],
         "-s" => ["isSilent", "stop any output from printing to the terminal, including confirmations."],
         "-o" => ["isOverrideValidation", "skip validation step with api params."],
+        "-p" => ["isListClientIds", "print out configured accounts"],
     ];
     protected $cli_options;
 
@@ -95,6 +96,7 @@ class ApiCallAbstract implements CliScriptInterface {
      */
     private $cli_options_modifications__abstract = [
         // "--flag" => ["otherFlagtoeffect", true/false],
+        "--client" => ["isListClientIds", true],
         // "-j" => ["isHelp", true],
     ];
 
@@ -174,9 +176,14 @@ class ApiCallAbstract implements CliScriptInterface {
         }
     }
 
+    protected function printClients() {
+        $this->account->printClients();
+    }
+
     public function ingestInput($vars, $skipValidate = false) {
         $client_info = array();
         $isStructured = false;
+
         foreach ($vars as $name => $value) {
             if ($name == "client_id" || $name == "api_key" || $name == "api_secret" || $name == "client_name") {
                 $client_info[$name] = $value;      
@@ -200,7 +207,12 @@ class ApiCallAbstract implements CliScriptInterface {
             }
         }
         
-        $this->assignClient($client_info);
+        if (CliScriptAbstract::$flags["isListClientIds"]) {
+            $this->printClients();
+        } else {
+            $this->assignClient($client_info);
+        }
+        
 
         if (CliScriptAbstract::$flags["isQueryCall"]) {
             $this->formatQuery();
