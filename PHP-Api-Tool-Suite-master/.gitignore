@@ -1,9 +1,0 @@
-# exclude base keys and secrets file
-Classes/Api/Account_Credentials/DefaultKeysAndSecrets.php
-
-#The existing use case files will be tracked so this just prevents new custom files. 
-#If you are collaborating, please continue to merge use case vars.
-Use_Case_Vars/*
-
-#Again, only prevents new files. This is why it is important to not modify the base files and then push them up. 
-Api_Scripts/*
