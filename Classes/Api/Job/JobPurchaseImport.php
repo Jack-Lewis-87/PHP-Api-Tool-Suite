@@ -12,13 +12,6 @@ class JobPurchaseImport extends JobPost {
     protected $job = "purchase_import";
 
     /*
-     * Method of Post or Get, in Jobs case, also possibly file. 
-     *
-     * @var array
-     */
-    protected $method = "postCall";
-
-    /*
      * Valid Parameters for a call
      *
      * @var array
@@ -102,6 +95,9 @@ class JobPurchaseImport extends JobPost {
     }
 
     public function getMethod() {
+        if (!isset($this->method)) {
+            $this->method = "postCall";
+        }
         return parent::getMethod($this->method);
     }
 

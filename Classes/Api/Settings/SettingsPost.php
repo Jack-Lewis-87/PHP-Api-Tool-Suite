@@ -3,13 +3,6 @@
 include(dirname(__DIR__)."/Settings/Settings.php");         //Call Specifc//Incomplete//
 
 class SettingsPost extends Settings {
-    
-    /*
-     * Valid Parameters for a call
-     *
-     * @var array
-     */
-    protected $method = "post";
 
     /*
      * Valid Parameters for a call
@@ -30,6 +23,8 @@ class SettingsPost extends Settings {
     private $cli_params__method = [
     	//returned_var => ["cli_entry_name", "Description"]
         "file" => ["beacon","URL of a new beacon image you wish to upload."],
+        "link_domain" => ["link_domain","Link domain to associate to the Apple App Association File."],
+        "app_ass" => ["aasf","Apple App Assocation File."],
         // "" => [],
     ];
 
@@ -72,6 +67,31 @@ class SettingsPost extends Settings {
 
 //helper methods
 //No need to modify when creating a new class
+
+    public function getMethod() {
+        if (!isset($this->method)) {
+            $this->method = "postCall";
+        }
+        return parent::getMethod($this->method);
+    }
+
+    public function ingestInput($vars, $skipValidate = false) {
+
+        parent::ingestInput($vars, $skipValidate);
+        if (isset($this->api_vars["link_domain"])) {
+            $tmp = $this->api_vars["link_domain"]."/apple-app-site-association";
+            $this->api_vars[$tmp] = $this->api_vars["app_ass"];
+            $this->api_vars["upload_name"] = $tmp;
+            unset($this->api_vars["link_domain"]);
+            unset($this->api_vars["app_ass"]);
+            $this->method = "genericFileUpload";
+        } else if (isset($this->api_vars["file"])) {
+            $this->api_vars["upload_name"] = "file";
+            $this->method = "genericFileUpload";
+        }
+        echo "vars \n";
+        var_dump($this->api_vars);
+    }
 
     public function getCliParameters($child_params = null) {
         //I'm reversing the array so I can have later classes overwrite earlier ones, but the parent classes still display first.

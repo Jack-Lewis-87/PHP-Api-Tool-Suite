@@ -12,13 +12,6 @@ class JobUpdate extends JobPost {
     protected $job = "update";
 
     /*
-     * Method of Post or Get, in Jobs case, also possibly file. 
-     *
-     * @var array
-     */
-    protected $method = "postCall";
-
-    /*
      * Valid Parameters for a call
      *
      * @var array
@@ -166,6 +159,9 @@ class JobUpdate extends JobPost {
     }
 
     public function getMethod() {
+        if (!isset($this->method)) {
+            $this->method = "postCall";
+        }
         return parent::getMethod($this->method);
     }
 
