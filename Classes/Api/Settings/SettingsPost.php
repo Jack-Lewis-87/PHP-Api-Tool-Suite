@@ -5,18 +5,11 @@ include(dirname(__DIR__)."/Settings/Settings.php");         //Call Specifc//Inco
 class SettingsPost extends Settings {
     
     /*
-     * Valid Parameters for a call
+     * Desription of the call
      *
      * @var array
      */
-    protected $method = "post";
-
-    /*
-     * Valid Parameters for a call
-     *
-     * @var array
-     */
-    protected $description = "Obstensibly set Account settings, but really just the account beacon.";
+    protected $description = "Set Account settings. Upload Apple App Site Assocation file or the account beacon.";
 
     /*
      * cli parameters specific to this Call's method, eg User Get
@@ -30,6 +23,8 @@ class SettingsPost extends Settings {
     private $cli_params__method = [
     	//returned_var => ["cli_entry_name", "Description"]
         "file" => ["beacon","URL of a new beacon image you wish to upload."],
+	"link_domain" => ["link_domain","Link domain to associate to the Apple App Association File."],
+        "app_ass" => ["app_file","Apple App Assocation File."],
         // "" => [],
     ];
 
@@ -57,6 +52,7 @@ class SettingsPost extends Settings {
      */
     private $api_params_validation__method = [
         //api_param => ["negation_param" => ["dependency_1", "dependency_2"], "always_required" => ["dependency_3"]],
+        app_ass => ["always_required" => ["link_domain"]],
         // "" => [],
     ];
 
@@ -72,6 +68,31 @@ class SettingsPost extends Settings {
 
 //helper methods
 //No need to modify when creating a new class
+
+    public function getMethod() {
+        if (!isset($this->method)) {
+            $this->method = "postCall";
+        }
+        return parent::getMethod($this->method);
+    }
+
+    public function ingestInput($vars, $skipValidate = false) {
+
+        parent::ingestInput($vars, $skipValidate);
+        if (isset($this->api_vars["link_domain"])) {
+            $tmp = $this->api_vars["link_domain"]."/apple-app-site-association";
+            $this->api_vars[$tmp] = $this->api_vars["app_ass"];
+            $this->api_vars["upload_name"] = $tmp;
+            unset($this->api_vars["link_domain"]);
+            unset($this->api_vars["app_ass"]);
+            $this->method = "genericFileUpload";
+        } else if (isset($this->api_vars["file"])) {
+            $this->api_vars["upload_name"] = "file";
+            $this->method = "genericFileUpload";
+        }
+        echo "vars \n";
+        var_dump($this->api_vars);
+    }
 
     public function getCliParameters($child_params = null) {
         //I'm reversing the array so I can have later classes overwrite earlier ones, but the parent classes still display first.

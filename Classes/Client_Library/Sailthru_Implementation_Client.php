@@ -337,6 +337,13 @@ class Sailthru_Implementation_Client {
         CliScriptAbstract::confirm($question, $failText);
     }
 
+    public function genericFileUpload($method, $data) {
+        $upload_name = $data["upload_name"];
+        unset($data["upload_name"]);
+        $response = $this->client->apiPost($method, $data, array($upload_name)); 
+        return $response;
+    }
+
     /**
      * Full import process. Splits a file, validates it's fields, and and uploads in chunks. 
      *
