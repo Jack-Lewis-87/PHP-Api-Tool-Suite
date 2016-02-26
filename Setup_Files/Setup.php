@@ -3,6 +3,7 @@
 $path = $argv[1];
 $cred_file = $path."/../Classes/Api/Account_Credentials/DefaultKeysAndSecrets.php";
 $client_file = $path."/../Classes/Client_Library/Sailthru_Implementation_Client.php";
+$environmnet = "https://api.sailthru.com";
 $last_error;
 $exit = 0;
 
@@ -46,6 +47,14 @@ if ($edit_mode == "add") {
 	$account_ref = "your default";
 }
 
+print "Are you a QA eginneer or Dev who needs to set an account in a different environment?\n(y/n)\n";
+$answer = readline();
+if ($answer == "y" || "yes")  
+{
+	print "Please enter the domain. Eg https://api.sailthru.com\n";
+	$environment = readline();
+	print "Recorded. ";
+} 
 
 print "Open my.sailthru.com and go to $account_ref Account's Config/Setup page to retrieve your API Key and Secret.\n";
 $is_repeat = true;
@@ -178,6 +187,7 @@ if ($edit_mode == null) {
 	fwrite($creds, "\tprotected static \$acctNumberDefault = ".$id.";\n");
 	fwrite($creds, "\tprotected static \$apiKeyDefault = \"".$key."\";\n");
 	fwrite($creds, "\tprotected static \$apiSecretDefault = \"".$secret."\";\n");
+	fwrite($creds, "\tprotected static \$apiEnvironmentDefault = \"".$environmnet."\";\n");	
 	fwrite($creds, "\t$endDefaultsLine\n");
 
 	fwrite($creds, "\n\t//Add other clients to this array:\n");
@@ -187,11 +197,13 @@ if ($edit_mode == null) {
 	fwrite($creds, "\t\t\t\"key\" => \"abc\",\n");
 	fwrite($creds, "\t\t\t\"secret\" => \"123\",\n");	
 	fwrite($creds, "\t\t\t\"name\" => \"Example Account\",\n");
+	fwrite($creds, "\t\t\t\"environmnet\" => \"https://api.sailthru.com\",\n");
 	fwrite($creds, "\t\t],\n");
 	fwrite($creds, "\t\t".$id." => [\n");
 	fwrite($creds, "\t\t\t\"key\" => \"".$key."\",\n");
 	fwrite($creds, "\t\t\t\"secret\" => \"".$secret."\",\n");
 	fwrite($creds, "\t\t\t\"name\" => \"".$name."\",\n");
+	fwrite($creds, "\t\t\t\"environmnet\" => \"".$environmnet."\",\n");
 	fwrite($creds, "\t\t],\n");
 	fwrite($creds, "\t//Setup.sh Delimiter\n");	
 	fwrite($creds, "\t//To those editing this file: Don't muck with the line above or any that follow it.\n");	 
@@ -201,6 +213,7 @@ if ($edit_mode == null) {
 	fwrite($creds, "\t\t\t\"key\" => \"".$key."\",\n");
 	fwrite($creds, "\t\t\t\"secret\" => \"".$secret."\",\n");
 	fwrite($creds, "\t\t\t\"name\" => \"".$name."\",\n");
+	fwrite($creds, "\t\t\t\"environmnet\" => \"".$environmnet."\",\n");
 	fwrite($creds, "\t\t]\n");
 	fwrite($creds, "\t);\n}\n");
 } else {
@@ -220,6 +233,7 @@ if ($edit_mode == null) {
 			$file_contents .= "\tprotected static \$acctNumberDefault = ".$id.";\n";
 			$file_contents .= "\tprotected static \$apiKeyDefault = \"".$key."\";\n";
 			$file_contents .= "\tprotected static \$apiSecretDefault = \"".$secret."\";\n";
+			$file_contents .= "\tprotected static \$apiEnvironmentDefault = \"".$environmnet."\";\n";
 			continue;
 		}
 		if (trim($line) == $defaultDelimiterLine) {
@@ -228,6 +242,7 @@ if ($edit_mode == null) {
 				$file_contents .= "\t\t\t\"key\" => \"".$key."\",\n";
 				$file_contents .= "\t\t\t\"secret\" => \"".$secret."\",\n";	
 				$file_contents .= "\t\t\t\"name\" => \"".$name."\",\n";
+				$file_contents .= "\t\t\t\"environmnet\" => \"".$environmnet."\",\n";
 				$file_contents .= "\t\t],\n";
 			}
 			if ($is_edit_defaults) {
@@ -235,6 +250,7 @@ if ($edit_mode == null) {
 				$file_contents .= "\t\t\t\"key\" => \"".$key."\",\n";
 				$file_contents .= "\t\t\t\"secret\" => \"".$secret."\",\n";	
 				$file_contents .= "\t\t\t\"name\" => \"".$name."\",\n";
+				$file_contents .= "\t\t\t\"environmnet\" => \"".$environmnet."\",\n";
 				$file_contents .= "\t\t],\n";
 
 				$file_contents .= "\t//Setup.sh Delimiter\n";	
@@ -245,6 +261,7 @@ if ($edit_mode == null) {
 				$file_contents .= "\t\t\t\"key\" => \"".$key."\",\n";
 				$file_contents .= "\t\t\t\"secret\" => \"".$secret."\",\n";
 				$file_contents .= "\t\t\t\"name\" => \"".$name."\",\n";
+				$file_contents .= "\t\t\t\"environmnet\" => \"".$environmnet."\",\n";				
 				$file_contents .= "\t\t]\n";
 				$file_contents .= "\t);\n}\n";
 				break;
@@ -254,7 +271,7 @@ if ($edit_mode == null) {
 	}
 	file_put_contents($cred_file, $file_contents);
 }
-print "\n".ucfirst($account_ref)." Key and Secret have been added. \nTo add more accounts, run this file again. It will be available with the other scripts at \"SetupApiAccounts.sh\".\n";
+print "\n".ucfirst($account_ref)." Key and Secret have been added. \nTo add more accounts, run this file again. It is also available with the other script shortcuts by typing: \"SetupApiAccounts.sh\".\n";
 fclose($creds);
 
 exit($exit);

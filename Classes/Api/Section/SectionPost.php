@@ -16,7 +16,7 @@ class SectionPost extends Section {
      *
      * @var array
      */
-    protected $description = "Obstensibly set Account settings, but really just the account beacon.";
+    protected $description = "Creating a section for Onsite.";
 
     /*
      * cli parameters specific to this Call's method, eg User Get
@@ -29,9 +29,9 @@ class SectionPost extends Section {
      */
     private $cli_params__method = [
     	//returned_var => ["cli_entry_name", "Description"]
-        "name" => ["name","URL of a new beacon image you wish to upload."],
+        "name" => ["name","Human friendly name for a section."],
         "audiences" => ["audiences", "Audiences: Input a JSON object to match documentations spec, or use the components given below."],
-        "feeds" => ["feedX","Feeds: For a given audience X, enter the feed id to power the blocks as feedX=\"id123abc\". Required."],
+        "feeds" => ["feedX","Feeds: For an arbitrarily numbered audience X, enter the feed id to power the blocks: eg feed1=\"id123abc\". Required."],
         "lists" => ["listX","Lists: In ascending order of priority (1 first, 10 last) Users on listX will recieve blockX's html. Give \"null\" to make an audience the default."],
         "blocks" => ["blockX_","Block: Ties to list and feed 'X', specifies the block type and a pre-existing block id. Should be blockX_type=id. Eg: block1_html=8fec2f68-6937-11e5-aa0d-002590d1a2f6"],
         "create_user" => ["creater","Create User: Email address to associate as the creater of this Section."],

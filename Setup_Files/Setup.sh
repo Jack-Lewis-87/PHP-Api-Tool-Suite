@@ -31,5 +31,5 @@ if [ $SKIP -eq 0 ]
 then
 	printf "\nexport PATH="'$PATH'":""'""$PATHBASE""'""" >> "$HOME/.bash_profile"
 	echo "Command line files have been added to your bash profile."
-	echo "Restart the terminal window to be able to use the files from anywhere. Eg: ListGet.sh"
+	echo "Restart the terminal window to be able to use the files from anywhere through their shortcut forms. Eg: ListGet.sh"
 fi
