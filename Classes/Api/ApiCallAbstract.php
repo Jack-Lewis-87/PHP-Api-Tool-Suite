@@ -254,7 +254,6 @@ class ApiCallAbstract implements CliScriptInterface {
                             CliScriptAbstract::confirm("One, and only one, of the following must be submitted: ".implode(", ", $dependencies).".\nContinue anyway?","Add the '-h' option for more details on valid inputs.");
                         }
                     } else if ($negation == "value_specifics") {
-                        var_dump($dependencies);
                         foreach ($dependencies as $value => $value_dependencies) {
                             if ($this->api_vars[$key] == $value) {
                                 foreach ($value_dependencies as $dependency) {
@@ -289,7 +288,6 @@ class ApiCallAbstract implements CliScriptInterface {
         } else {
             $result = $this->method."Call";
         }
-        var_dump($client_function);
         return $result;
     }
 

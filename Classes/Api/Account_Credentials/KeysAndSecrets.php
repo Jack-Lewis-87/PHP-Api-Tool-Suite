@@ -11,26 +11,28 @@ class KeysAndSecrets extends DefaultKeysAndSecrets
 	protected static $number;
 	protected static $key;
 	protected static $secret;
+	protected static $environment;
 
 	public static function setDefaults() {
 		KeysAndSecrets::$number = KeysAndSecrets::$acctNumberDefault;
  		KeysAndSecrets::$name = KeysAndSecrets::$acctNameDefault;
  		KeysAndSecrets::$key = KeysAndSecrets::$apiKeyDefault;
  		KeysAndSecrets::$secret = KeysAndSecrets::$apiSecretDefault;
+ 		KeysAndSecrets::$environment = KeysAndSecrets::$apiEnvironmentDefault;
  	}
 
 
- 	public static function setAccount($key = null, $secret = null, $name = null, $id = null) {
+ 	public static function setAccount($key = null, $secret = null, $name = null, $id = null, $environment = "https://api.sailthru.com") {
 		if ($key == null || $key == "default") {
 			KeysAndSecrets::setDefaults();
 		} else if (is_numeric($key)) {
 			KeysAndSecrets::setAccountById($key);
 		} else {
-			KeysAndSecrets::setKeySecret($key, $secret, $name, $id);
+			KeysAndSecrets::setKeySecret($key, $secret, $name, $id, $environment);
 		}
 	}
 
- 	public static function setKeySecret($key, $secret, $name = null, $id = null) {
+ 	public static function setKeySecret($key, $secret, $name = null, $id = null, $environment = null) {
  		if ($key == null || $secret == null) {
  			die("Key and Secret need to be set together\n");
  		} else {
@@ -68,6 +70,14 @@ class KeysAndSecrets extends DefaultKeysAndSecrets
 		}
 	}
 
+	public static function getEnvironment($id = null) {
+		if ($id === null) {
+			return KeysAndSecrets::$environment;
+		} else { 	
+			return KeysAndSecrets::$clients[$id]["environment"];
+		}
+	}
+	
 	public static function getName($id = null) {
 		if ($id === null) {
 			return KeysAndSecrets::$name;

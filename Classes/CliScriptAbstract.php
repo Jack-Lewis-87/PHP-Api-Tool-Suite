@@ -113,6 +113,7 @@ class CliScriptAbstract {
 				$param_key = $e[0];
 				if ($e[1][0] == "{") 
 				{
+					$e[1] = convertSmartQuotes($e[1]);
 					$exploded_args[$param_key] = json_decode($e[1], true);
 					if (json_last_error() !== JSON_ERROR_NONE) 
 					{
@@ -148,6 +149,20 @@ class CliScriptAbstract {
 
 		return array("config_vars" => $vars, "wildcard_vars" => $exploded_args, "other_inputs" => $other_inputs);
 	}
+
+	public function convertSmartQuotes($string) {
+        $search = array(chr(145),
+        chr(146),
+        chr(147),
+        chr(148));
+         
+        $replace = array("'",
+        "'",
+        '"',
+        '"');
+         
+        return str_replace($search, $replace, $string);
+    }	
 
 	protected static function print_help($cli_description, $cli_params, $options, $cli_extras, $brief = false) {
 		print $cli_description;

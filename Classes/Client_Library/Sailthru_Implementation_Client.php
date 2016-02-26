@@ -35,13 +35,6 @@ class Sailthru_Implementation_Client {
 
     /**
      *
-     * Specific Job type to run 
-     * @var string
-     */
-    protected $job_type;
-
-    /**
-     *
      * File ending
      *
      * @var string
@@ -330,6 +323,11 @@ class Sailthru_Implementation_Client {
         date_default_timezone_set($timezone);
     }
 
+    //Courtesy of http://snipe.net/2008/12/fixing-curly-quotes-and-em-dashes-in-php/
+    public function convertSmartQuotes($string) {
+        return CliScriptAbstract::convertSmartQuotes($string);
+    }
+
     private function confirm($question, $failText) {
         CliScriptAbstract::confirm($question, $failText);
     }
@@ -540,12 +538,26 @@ class Sailthru_Implementation_Client {
         if (($line = fgets($main_file)) !== FALSE) {
             if ($format == "unknown") {
                 $char = $line[0];
+                var_dump(explode(" ", $line));
                 if ($char == "{") {
+                    if ($this->job_data["job"] != "update") {
+                        throw new Exception("That file format isn't valid, it must be JSON or a simple file with an email address per line.");
+                    }
                     $format = "json";
-                } else {
+                } else if (strpos(explode(" ", $line)[0], "@") != false) {  //Check for @ in the first word
+                    $format = "simple email per line";
+                } else if (count(explode(",", $line)) > 0 ) { //FIX THIS FURTHER
+                    if ($this->job_data["job"] != "import") {
+                        throw new Exception("That file format isn't valid, it must be CSV or a simple file with an email address per line.");
+                    }
                     $format = "csv";
+                } else {
+                    $format = "unknown type, uploading as though it is a simple txt";
                 }
                 $this->confirm("Infering File is a ".$format." file.\nContinue?", "Provide file_type to set the format.");
+                if ($format == "simple email per line" || $format = "unknown type, uploading as though it is a simple txt") {
+                    $format = "txt";
+                }
             }
             if ($is_skip_check) {
                 return $format;
@@ -586,11 +598,13 @@ class Sailthru_Implementation_Client {
 		$sub_file_num += 1;
 
 		$isError = false;
+        $errorRecords = false;
 
 		while (($line = fgets($main_file)) !== FALSE) {
-
+            $line = $this->convertSmartQuotes($line);
+    
             // VALIDATION
-            if ($this->file_type == "csv") {
+            if ($format == "csv") {
                 $data = str_getcsv($line);
     			foreach ($data as $i => $field) {
     				if ($row == $HEADER_ROW) {
@@ -615,7 +629,7 @@ class Sailthru_Implementation_Client {
     					}
     				}
     			} //Loop to next field
-            } else if ($this->file_type == "json") {
+            } else if ($format == "json") {
                 $data = json_decode($line, true);
                 if (json_last_error() !== JSON_ERROR_NONE) {
                     $isError = true;
@@ -623,12 +637,17 @@ class Sailthru_Implementation_Client {
                     $isError = true;
                 }
                 $line;
+            } else if ($format == "txt") {
+                $line = $this->convertSmartQuotes($line);
+                //Not really much to validate here. 
             }
+            
 
-			if ($isError && $log_invalids) {
-				$isError = false;
-				fwrite($error_file, $line);
-			}
+            if ($isError && $log_invalids) {
+                $isError = false;
+                fwrite($error_file, $line);
+                $errorRecords = true;
+            }
 
 			if (($current_mem_sub_file + strlen($line)) > $chunk_mem_split) {
 				fclose($sub_file);
@@ -642,7 +661,7 @@ class Sailthru_Implementation_Client {
 
                 $current_mem_sub_file = 0;
 
-                if ($this->file_type == "csv") {
+                if ($this->format == "csv") {
                     fwrite($sub_file, $header_line);
                     $current_mem_sub_file = $header_memory;
                 }   
@@ -652,11 +671,15 @@ class Sailthru_Implementation_Client {
 			fwrite($sub_file, $line);
 
             $row += 1;  
-	    } //Loop to next line	
+	    } //Loop to next line  
         print "File split into ".($sub_file_num - 1)." files.\n";
         fwrite($api_log, "File split into ".($sub_file_num - 1)." files.\n");
-	    fclose($sub_file);
-		fclose($main_file);
+        if ($errorRecords) {
+            print "Some records will fail, check error log.\n\n";
+            fwrite($api_log, "Some records will fail, check error log.\n\n");
+        }
+        fclose($sub_file);
+        fclose($main_file);
     }
 
     //TBF

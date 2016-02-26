@@ -84,7 +84,7 @@ $api_object->ingestInput($input_vars["config_vars"] + $input_vars["wildcard_vars
 if (CliScriptAbstract::$flags["isDefaults"]) {
 	$account_credentials->setAccount("defaults");
 }
-$client = new Sailthru_Implementation_Client($account_credentials->getKey(), $account_credentials->getSecret());
+$client = new Sailthru_Implementation_Client($account_credentials->getKey(), $account_credentials->getSecret(), $account_credentials->getEnvironment);
 ////Designate Call Parameters
 $call_data = $api_object->getCallData();
 $endpoint = $api_object->getEndpoint();
