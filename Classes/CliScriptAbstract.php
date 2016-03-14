@@ -163,6 +163,34 @@ class CliScriptAbstract {
          
         return str_replace($search, $replace, $string);
     }	
+    /* Thanks JR, this code is pretty much yours. 
+     * Credit : http://www.if-not-true-then-false.com/2010/php-class-for-coloring-php-command-line-cli-scripts-output-php-output-colorizing-using-bash-shell-colors/
+     */
+    public function printColor($toPrint, $color) {
+		 // Set up shell colors
+    	 $foreground_colors = [];
+		 $foreground_colors['black'] = '0;30';
+		 $foreground_colors['dark_gray'] = '1;30';
+		 $foreground_colors['blue'] = '0;34';
+		 $foreground_colors['light_blue'] = '1;34';
+		 $foreground_colors['green'] = '0;32';
+		 $foreground_colors['light_green'] = '1;32';
+		 $foreground_colors['cyan'] = '0;36';
+		 $foreground_colors['light_cyan'] = '1;36';
+		 $foreground_colors['red'] = '0;31';
+		 $foreground_colors['light_red'] = '1;31';
+		 $foreground_colors['purple'] = '0;35';
+		 $foreground_colors['light_purple'] = '1;35';
+		 $foreground_colors['brown'] = '0;33';
+		 $foreground_colors['yellow'] = '1;33';
+		 $foreground_colors['light_gray'] = '0;37';
+		 $foreground_colors['white'] = '1;37';
+		 if (isset($foreground_colors[$color])) {
+		 	echo "\033[".$foreground_colors[$color]."m".$toPrint."\033[0m"; 
+		 } else {
+		 	echo $toPrint;
+		 }
+    }
 
 	protected static function print_help($cli_description, $cli_params, $options, $cli_extras, $brief = false) {
 		print $cli_description;
