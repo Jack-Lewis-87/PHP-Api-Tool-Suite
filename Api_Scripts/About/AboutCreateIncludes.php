@@ -1,5 +1,5 @@
 <?php
-// Base Script to be copied then modified.
+// Early Usage. Not a good Model for going forward. 
 //											COPY THEN MODIFY
 ini_set("auto_detect_line_endings", true);
 

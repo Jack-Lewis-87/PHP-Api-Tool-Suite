@@ -354,6 +354,10 @@ class ApiCallAbstract implements CliScriptInterface {
     		$this->api_vars[$name] = $value;
     }
 
+    public function setDescription($description) {
+            $this->description = $description;
+    }
+
     public function getApiParamValidation($child_params_validation = null) {
         if ($child_params_validation != null) {
             $params_validation = $child_params_validation + $this->api_params_validation__abstract;

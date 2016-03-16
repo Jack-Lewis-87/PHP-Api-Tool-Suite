@@ -76,7 +76,6 @@ http://getstarted.sailthru.com/new-for-developers-overview
 // $api_object->setVar("id","jlewis@sailthru.com");
 
 
-
 ////Read in CLI Vars - In conflict takes highest priority over other inputs
 $input_vars = $script->readCliArguments($argv, $api_object);
 $api_object->ingestInput($input_vars["config_vars"] + $input_vars["wildcard_vars"], CliScriptAbstract::$flags["isOverride"]);  //Validates and Assigns Vars

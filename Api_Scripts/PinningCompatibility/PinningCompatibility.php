@@ -44,6 +44,10 @@ new ScriptSettings();
 
 
 //Read in CLI Vars
+//Add new parameters to print out in the help screen that are exclusive to this custom Script. Can use the simpler format here or the format api classes use. 
+// $cli_params = ["example" => "What example should be used to do"];
+// $api_object->createCliParameters($cli_params);
+$template_get->setDescription("Return a how compatible a given template is, or an Account's templates are, with regards to Pinning.");
 $input_vars = $script->readCliArguments($argv, $template_get);
 $template_get->ingestInput($input_vars["config_vars"] + $input_vars["wildcard_vars"], CliScriptAbstract::$flags["isOverride"]);  //Validates and Assigns Vars
 
