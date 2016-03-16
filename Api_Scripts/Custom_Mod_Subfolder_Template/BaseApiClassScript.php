@@ -76,7 +76,9 @@ http://getstarted.sailthru.com/new-for-developers-overview
 ////Defaults or One Time Vars - In a conflict this over writes the use case file, but loses to cli input
 // $api_object->setVar("id","jlewis@sailthru.com");
 
-
+//Add new parameters to print out in the help screen that are exclusive to this custom Script. Can use the simpler format here or the format api classes use. 
+$cli_params = ["example" => "What example should be used to do"];
+$api_object->createCliParameters($cli_params);
 
 ////Read in CLI Vars - In conflict takes highest priority over other inputs
 $input_vars = $script->readCliArguments($argv, $api_object);

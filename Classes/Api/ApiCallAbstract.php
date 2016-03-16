@@ -303,6 +303,17 @@ class ApiCallAbstract implements CliScriptInterface {
         return array_reverse($cli_params);
     }
 
+    public function createCliParameters($params) {
+        if (is_array(array_values($params)[0])) {
+            $this->cli_params__abstract = array_merge($this->cli_params__abstract, $params);
+        } else {
+            foreach ($params as $ref => $desc) {
+                $params[$ref] = [$ref, $desc];
+            }
+            $this->cli_params__abstract = array_merge($this->cli_params__abstract, $params);
+        }
+    }
+
     public function getCliOptions($child_options = null) {
         if ($child_options != null) {
             $cli_options = $child_options + $this->cli_options__abstract;
