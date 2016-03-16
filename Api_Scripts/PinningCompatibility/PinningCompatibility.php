@@ -161,7 +161,7 @@ function inspectTemplateForZephyr($response, $bad_includes, $horizon_includes, $
 			return;
 		}
 
-		if (in_array("include \"", $hits_array)) {
+		if (in_array("include \"", $hits_array) && count($bad_includes) > 0) {
 
 			$test = "/(\b".implode("\b)|(\b", $bad_includes)."\b)/";
 			if (preg_match_all($test, $response["content_html"], $hits)) {

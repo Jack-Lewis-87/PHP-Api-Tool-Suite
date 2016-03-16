@@ -82,7 +82,7 @@ do
 	do
 	{
 		print "Enter ".$account_ref." Account's API Secret:\n";
-		if (isset($secret) && isset()) {
+		if (isset($secret)) {
 			print "Hit enter to reuse ".$secret."\n";
 			$old_secret = $secret;
 		}
