@@ -8,15 +8,17 @@ This tool is great for two sets of Sailthru Employees. <br>
 
 Open Finder and navigate to where you downloaded this folder. Although the PHP Api Tool Suite folder can live anywhere, consider moving it into your Home Folder if you don't have somewhere else in mind.<br>
 Then press command + spacebar and type 'terminal' into the search box. Resize the terminal window so half the screen is the terminal and the other half is Finder.<br>
-Type "chmod +x " (don't press enter yet) in the terminal window then locate the file below in finder and drag and drop it into the terminal window. Press enter. The next line should return without a message. Note: There should be a space between the +x and the start of the file name. 
+
+Locate the file below in finder:<br>
 
 **Setup_Files/setup.sh**
 
-It should look somthing like this:<br>
-M8234:~ johnlewis$ chmod +x /Users/johnlewis/Documents/implementation/PHP_Api_Tool_Suite/Setup_Files/Setup.sh <br>
+Drag and drop it into the terminal window. Press enter. You should see the phrase, "Lets set up your default API Key and Secret."
 
-Then drag and drop the setup.sh file into the terminal again on its own and press enter.<br>
-M8234:~ johnlewis$ /Users/johnlewis/Documents/toolbox/implementation/PHP_Api_Tool_Suite/Setup_Files/Setup.sh <br>
+Note: 
+If you instead get an error message about a command not being found, run the following command then rerun the file: "chmod +x drag/folder/here/Setup.sh" The new line would look like this.<br>
+M8234:~ johnlewis$ chmod +x /Users/johnlewis/Documents/implementation/PHP_Api_Tool_Suite/Setup_Files/Setup.sh <br>
+:End Note
 
 The Setup will guide you through creating a default config for your test account's Key and Secret. That will make your account the default in subsequent use. You can add other clients so they are also easily accessible. Run setup.sh again or adding them directly to Classes/Api/Account_Credentials/DefaultKeysAndSecrets.php. If you don't have a test account, email sgiordano@sailthru.com about setting one up for you. 
 
