@@ -22,7 +22,7 @@ M8234:~ johnlewis$ chmod +x /Users/johnlewis/Documents/implementation/PHP_Api_To
 
 The Setup will guide you through creating a default config for your test account's Key and Secret. That will make your account the default in subsequent use. You can add other clients so they are also easily accessible. Run setup.sh again or adding them directly to Classes/Api/Account_Credentials/DefaultKeysAndSecrets.php. If you don't have a test account, email sgiordano@sailthru.com about setting one up for you. 
 
-You are now set up to use the library from anywhere. Type in the API type, eg List or User, followed by the type, eg Get or Post, then press tab. You will know it worked if a '.sh' is added to the end. Hit enter and the rest of the options for that call will print to the screen.
+You are now set up to use the library from anywhere. Write in the API type, eg List or User, followed by the method, eg Get or Post, then press tab. You will know it worked if a '.sh' is added to the end. Hit enter and the options for how to make that call will print to the screen.
 
 **ListGet.sh**
 
