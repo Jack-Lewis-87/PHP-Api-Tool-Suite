@@ -1,6 +1,6 @@
 <?php
 
-include(dirname(__DIR__)."/ApiCallAbstract.php");        
+include_once(dirname(__DIR__)."/ApiCallAbstract.php");        
 
 class Section extends ApiCallAbstract {
 

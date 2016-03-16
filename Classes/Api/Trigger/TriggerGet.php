@@ -1,6 +1,6 @@
 <?php
 
-include(dirname(__DIR__)."/Trigger/Trigger.php");         //Call Specifc//Incomplete//
+include_once(dirname(__DIR__)."/Trigger/Trigger.php");         //Call Specifc//Incomplete//
 
 class TriggerGet extends Trigger {
     

@@ -1,6 +1,6 @@
 <?php
 
-include(dirname(__DIR__)."/Event/Event.php");         //Call Specifc//Incomplete//
+include_once(dirname(__DIR__)."/Event/Event.php");         //Call Specifc//Incomplete//
 
 class EventPost extends Event {
     

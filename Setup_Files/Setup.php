@@ -52,7 +52,7 @@ print "Are you a QA eginneer or Dev who needs to set an account in a different e
 $answer = readline();
 if ($answer == "y" || $answer == "yes")  
 {
-	print "Please enter the domain. Eg https://api.sailthru.com\n";
+	print "Please enter the API domain. Eg https://api.sailthru.com\n";
 	$environment = readline();
 	print "Recorded. ";
 } 
@@ -82,7 +82,7 @@ do
 	do
 	{
 		print "Enter ".$account_ref." Account's API Secret:\n";
-		if (isset($secret)) {
+		if (isset($secret) && isset()) {
 			print "Hit enter to reuse ".$secret."\n";
 			$old_secret = $secret;
 		}
@@ -156,7 +156,7 @@ do
 	else
 	{
 		print "\nThere was an error with the call. Probably an invalid Key or Secret.\n"; 
-		print "Would you like to try again? (y/n)\n";
+		print "Would you like to try again? (y/n/error)\n";
 		$answer = readline();
 		if ($answer == "error") {
 			var_dump($return_id);

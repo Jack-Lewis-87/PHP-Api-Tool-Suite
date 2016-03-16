@@ -1,6 +1,6 @@
 <?php
 
-include(dirname(__DIR__)."/Blast/Blast.php");         //Call Specifc//Incomplete//
+include_once(dirname(__DIR__)."/Blast/Blast.php");         //Call Specifc//Incomplete//
 
 class BlastDelete extends Blast {
     

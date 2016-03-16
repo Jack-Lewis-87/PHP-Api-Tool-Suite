@@ -1,6 +1,6 @@
 <?php
 
-include(dirname(__DIR__)."/User/User.php");         //Call Specifc//Incomplete//
+include_once(dirname(__DIR__)."/User/User.php");         //Call Specifc//Incomplete//
 
 class UserPost extends User {
     

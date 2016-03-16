@@ -1,6 +1,6 @@
 <?php
 
-include(dirname(__DIR__)."/Job/JobPost.php");         //Call Specifc//Incomplete//
+include_once(dirname(__DIR__)."/Job/JobPost.php");         //Call Specifc//Incomplete//
 
 class JobExportPurchaseLog extends JobPost {
 

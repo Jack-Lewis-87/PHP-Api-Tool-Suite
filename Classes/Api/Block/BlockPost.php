@@ -1,6 +1,6 @@
 <?php
 
-include(dirname(__DIR__)."/Block/Block.php");         //Call Specifc//Incomplete//
+include_once(dirname(__DIR__)."/Block/Block.php");         //Call Specifc//Incomplete//
 
 class BlockPost extends Block {
     

@@ -1,6 +1,6 @@
 <?php
 
-include(dirname(__DIR__)."/Stats/Stats.php");         //Call Specifc//Incomplete//
+include_once(dirname(__DIR__)."/Stats/Stats.php");         //Call Specifc//Incomplete//
 
 class StatsGet extends Stats {
     

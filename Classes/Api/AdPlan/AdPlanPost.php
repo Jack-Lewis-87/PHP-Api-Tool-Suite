@@ -1,6 +1,6 @@
 <?php
 
-include(dirname(__DIR__)."/AdPlan/AdPlan.php");         //Call Specifc//Incomplete//
+include_once(dirname(__DIR__)."/AdPlan/AdPlan.php");         //Call Specifc//Incomplete//
 
 class AdPlanPost extends AdPlan {
     

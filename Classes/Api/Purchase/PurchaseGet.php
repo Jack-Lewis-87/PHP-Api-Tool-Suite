@@ -1,6 +1,6 @@
 <?php
 
-include(dirname(__DIR__)."/Purchase/Purchase.php");         //Call Specifc//Incomplete//
+include_once(dirname(__DIR__)."/Purchase/Purchase.php");         //Call Specifc//Incomplete//
 
 class PurchaseGet extends Purchase {
     

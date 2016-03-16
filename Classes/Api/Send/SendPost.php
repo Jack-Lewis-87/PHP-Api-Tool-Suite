@@ -1,6 +1,6 @@
 <?php
 
-include(dirname(__DIR__)."/Send/Send.php");         //Call Specifc//Incomplete//
+include_once(dirname(__DIR__)."/Send/Send.php");         //Call Specifc//Incomplete//
 
 class SendPost extends Send {
     

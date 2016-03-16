@@ -1,6 +1,6 @@
 <?php
 
-include(dirname(__DIR__)."/Preview/Preview.php");         //Call Specifc//Incomplete//
+include_once(dirname(__DIR__)."/Preview/Preview.php");         //Call Specifc//Incomplete//
 
 class PreviewPost extends Preview {
     

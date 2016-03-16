@@ -1,6 +1,6 @@
 <?php
 
-include(dirname(__DIR__)."/Template/Template.php");         //Call Specifc//Incomplete//
+include_once(dirname(__DIR__)."/Template/Template.php");         //Call Specifc//Incomplete//
 
 class TemplatePost extends Template {
     

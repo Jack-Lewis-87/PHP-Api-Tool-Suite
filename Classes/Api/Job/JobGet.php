@@ -1,6 +1,6 @@
 <?php
 
-include(dirname(__DIR__)."/Job/Job.php");         //Call Specifc//Incomplete//
+include_once(dirname(__DIR__)."/Job/Job.php");         //Call Specifc//Incomplete//
 
 class JobGet extends Job {
     

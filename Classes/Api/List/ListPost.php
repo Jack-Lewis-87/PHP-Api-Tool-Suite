@@ -1,6 +1,6 @@
 <?php
 
-include(dirname(__DIR__)."/List/ListEndpoint.php");         //Call Specifc//Incomplete//
+include_once(dirname(__DIR__)."/List/ListEndpoint.php");         //Call Specifc//Incomplete//
 
 class ListPost extends ListEndpoint {
     

@@ -1,6 +1,6 @@
 <?php
 
-include(dirname(__DIR__)."/Include/IncludeEndpoint.php");         //Call Specifc//Incomplete//
+include_once(dirname(__DIR__)."/Include/IncludeEndpoint.php");         //Call Specifc//Incomplete//
 
 class IncludeDelete extends IncludeEndpoint {
     

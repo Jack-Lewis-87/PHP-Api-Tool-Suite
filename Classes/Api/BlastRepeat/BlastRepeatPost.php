@@ -1,6 +1,6 @@
 <?php
 
-include(dirname(__DIR__)."/BlastRepeat/BlastRepeat.php");         //Call Specifc//Incomplete//
+include_once(dirname(__DIR__)."/BlastRepeat/BlastRepeat.php");         //Call Specifc//Incomplete//
 
 class BlastRepeatPost extends BlastRepeat {
     

@@ -1,6 +1,6 @@
 <?php
 
-include(dirname(__DIR__)."/Settings/Settings.php");         //Call Specifc//Incomplete//
+include_once(dirname(__DIR__)."/Settings/Settings.php");         //Call Specifc//Incomplete//
 
 class SettingsPost extends Settings {
 
