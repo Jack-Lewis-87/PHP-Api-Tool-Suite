@@ -48,7 +48,7 @@ if ($edit_mode == "add") {
 	$account_ref = "your default";
 }
 
-print "Are you a QA eginneer or Dev who needs to set an account in a different environment?\n(y/n)\n";
+print "Are you a QA engineer or Dev who needs to set an account in a different environment?\n(y/n)\n";
 $answer = readline();
 if ($answer == "y" || $answer == "yes")  
 {
