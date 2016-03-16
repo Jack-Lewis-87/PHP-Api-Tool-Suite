@@ -10,11 +10,13 @@ $exit = 0;
 include($client_file);
 
 $file_access = "w";
+$edit_mode = null;
 
 if (file_exists($cred_file)) {
 	//Bit of a hack to make sure the credential file was completely created. If it wasn't 
 	if (filesize($cred_file) < 900) {
-		echo "Your Key and Secret file wasn't completed or has been currupted. Lets create it again.\n\n";
+        echo "Your Key and Secret file wasn't completed or has been currupted. Lets create it again.\n\n";
+        $file_access = "w"; 
 	} else {
 		$exit = 1;
 		print "A Key and Secret file already exists. Do you want to change your default account, add a new account, or skip this step and refresh bash scripts?\n(edit/add/skip)\n";
@@ -29,17 +31,16 @@ if (file_exists($cred_file)) {
 			print "That isn't a valid option, please run SetupApiAccounts.sh again.\n";
 			exit(3);
 		}
-		if (($creds = fopen($cred_file, "r")) === FALSE) {
-	    	throw new Exception("Unable to open ".$cred_file);   
-		}
+        
 	}
 } else {
-	print "Lets set up your default API Key and Secret.\n\n";
-	if (($creds = fopen($cred_file, "w")) === FALSE) {
-    	throw new Exception("Unable to open ".$cred_file);   
-	}
+    print "Lets set up your default API Key and Secret.\n\n";
+    
 }
 
+if (($creds = fopen($cred_file, $file_access)) === FALSE) {
+   	throw new Exception("Unable to open ".$cred_file);   
+}
 
 if ($edit_mode == "add") {
 	$account_ref = "the new";
@@ -49,7 +50,7 @@ if ($edit_mode == "add") {
 
 print "Are you a QA eginneer or Dev who needs to set an account in a different environment?\n(y/n)\n";
 $answer = readline();
-if ($answer == "y" || "yes")  
+if ($answer == "y" || $answer == "yes")  
 {
 	print "Please enter the domain. Eg https://api.sailthru.com\n";
 	$environment = readline();
@@ -66,12 +67,12 @@ do
 	do
 	{
 		print "Enter ".$account_ref." Account's API Key:\n";
-		if ($key) {
+		if (isset($key)) {
 			print "Hit enter to reuse ".$key."\n";
 			$old_key = $key;
 		}
-		$key = trim(readline());
-		if ($key == "" && $old_key) {
+        $key = trim(readline());
+		if ($key == "" && isset($old_key)) {
 			$key = $old_key;
 		}
 		$retry += 1;
@@ -81,12 +82,12 @@ do
 	do
 	{
 		print "Enter ".$account_ref." Account's API Secret:\n";
-		if ($secret) {
+		if (isset($secret)) {
 			print "Hit enter to reuse ".$secret."\n";
 			$old_secret = $secret;
 		}
 		$secret = trim(readline());
-		if ($secret == "" && $old_secret) {
+		if ($secret == "" && isset($old_secret)) {
 			$secret = $old_secret;
 		}
 		$retry += 1;
@@ -96,12 +97,12 @@ do
 	do
 	{
 		print "Enter the Numerical ID of ".$account_ref." Account:\n";
-		if ($id) {
+		if (isset($id)) {
 			print "Hit enter to reuse ".$id."\n";
 			$old_id = $id;
 		}
 		$id = intval(trim(readline()));
-		if ($id == "" && $old_id) {
+		if ($id == "" && isset($old_id)) {
 			$id = $old_id;
 		}
 		$retry += 1;
@@ -111,12 +112,12 @@ do
 	do
 	{
 		print "Enter ".$account_ref." Account's Name:\n";
-		if ($name) {
+		if (isset($name)) {
 			print "Hit enter to reuse ".$name."\n";
 			$old_name = $name;
 		}
 		$name = trim(readline());
-		if ($name == "" && $old_name) {
+		if ($name == "" && isset($old_name)) {
 			$name = $old_name;
 		}
 		$retry += 1;
@@ -223,7 +224,7 @@ if ($edit_mode == null) {
 	while (($line = fgets($creds)) !== FALSE) {
 		if (trim($line) == $endDefaultsLine) {
 			$is_editing_defaults = false;
-		} else if ($is_editing_defaults) {
+		} else if (isset($is_editing_defaults) && $is_editing_defaults) {
 			continue;
 		}
 		if (trim($line) == $startDefaultsLine && $is_edit_defaults) {
@@ -237,7 +238,7 @@ if ($edit_mode == null) {
 			continue;
 		}
 		if (trim($line) == $defaultDelimiterLine) {
-			if ($is_add_new) {
+			if (isset($is_add_new) && $is_add_new) {
 				$file_contents .= "\t\t".$id." => [\n";
 				$file_contents .= "\t\t\t\"key\" => \"".$key."\",\n";
 				$file_contents .= "\t\t\t\"secret\" => \"".$secret."\",\n";	
@@ -245,7 +246,7 @@ if ($edit_mode == null) {
 				$file_contents .= "\t\t\t\"environmnet\" => \"".$environmnet."\",\n";
 				$file_contents .= "\t\t],\n";
 			}
-			if ($is_edit_defaults) {
+			if (isset($is_edit_defaults) && $is_edit_defaults) {
 				$file_contents .= "\t\t".$id." => [\n";
 				$file_contents .= "\t\t\t\"key\" => \"".$key."\",\n";
 				$file_contents .= "\t\t\t\"secret\" => \"".$secret."\",\n";	
