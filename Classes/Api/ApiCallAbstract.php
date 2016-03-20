@@ -122,12 +122,28 @@ class ApiCallAbstract implements CliScriptInterface {
     ];
 
     /*
-     * API Parameters for any call, used for validation. 
-     * the cli_params key needs to match this key.
+     * Vaidation for Submitted Parameters. 
+     * Must match the actual cli_params (not the 'friendly' key name).
+     *
+     * This actually accounts for most validation situations. 
+     * Required Params, including conditionally required params are found in the "always_required" key. 
+     * Any other param with validation concerns is its own key. 
+     *
+     * In the Required Parameter's Validation:
+     * "always_required" array holds the param(s) that always need to be passed.
+     * "require_one" array contains conditionally required params. So long as one is present, validation passes.
+     * 
+     * In any other Param's Validation:
+     * "always_required" array has any other params that always need to be passed along with the initial param.
+     * "require_one" array contains conditionally required params. So long as one is present, validation passes.
+     * "value_specific" array is a futher array structure with the initial param's potential values and the subsequent required parameters each would require.
+     * Negation param array is a key:array pair, where if the key isn't present, the array params are required. Eg: if you aren't using a template to send a blast, the html et all is required.
+     *
      * @var array
      */
     private $cli_query_validation = [
-        //Ex: "api_param" => [["first_dependency", "second_dependency", "etc.."]]  
+        //Req: "always_required" => ["always_required" => ["necessary_param"], "require_one" => ["likely_needed","probably_needed"]],
+        //Ex: "api_param" => ["copy_template" => ["html_content"], "always_required" => ["name"], "require_one" => ["file","email"]]  
         "multiple_source_list" => ["always_required" => ["source_list"]],
         "source_list" => ["value_specifics" => [".multiple" => ["multiple_source_list"], ".multiple-all" => ["multiple_source_list"]]]
     ];
