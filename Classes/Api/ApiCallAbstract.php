@@ -69,7 +69,8 @@ class ApiCallAbstract implements CliScriptInterface {
         //Ex: returned_var => ["cli_entry_name", "Description"]
     	"api_key" => ["key","API Key, requires Secret."],
     	"api_secret" => ["secret", "API Secret, requires Key."],
-        "client_id" => ["client_id", "Client Id for a preconfigured Account, automatically pulls Key & Secret."]
+        "client_id" => ["client_id", "Client Id for a preconfigured Account, automatically pulls Key & Secret."],
+        "json" => ["json", "Full or partial JSON version of a call"],
     ];
     protected $cli_params;
 
@@ -197,15 +198,21 @@ class ApiCallAbstract implements CliScriptInterface {
     }
 
     public function ingestInput($vars, $skipValidate = false) {
+        //$Vars are coming from the script, so either CLI or hardcoded inputs. 
         $client_info = array();
         $isStructured = false;
-
+$i=0;
         foreach ($vars as $name => $value) {
+            $i= $i + 4;
             if ($name == "client_id" || $name == "api_key" || $name == "api_secret" || $name == "client_name") {
                 $client_info[$name] = $value;      
             } else if ($name == "always_required") {
                 if ($value == 0) {
                     $this->api_vars[$name] = "This is really a check but I figured I would add some backdoor functionality with it. Passing 0 partially mimics '-o' except it will only ignore independantly requried params.";
+                }
+            } else if ($name == "json") {
+                foreach ($value as $name_json => $value_json) {
+                    $this->api_vars[$name_json] = $value_json;
                 }
             } else {
                 foreach ($this->api_params_structure as $true_var => $prefix) {

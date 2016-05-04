@@ -32,7 +32,7 @@ class JobUpdate extends JobPost {
         //returned_var => ["cli_entry_name", "Description"]
         "file" => ["file","File: Local path to a csv file with user information. Will be automatically split up and uploaded in chunks."],
         "file_type" => ["file_type", "File Type: JSON or CSV. "],
-        "brand_name" => ["brand", "Brand: A human readable name of the cleint. Used for folder creation when uploading files."],
+        "brand_name" => ["brand", "Brand: A human readable name of the client. Used for folder creation when uploading files."],
         "emails" => ["emails","Emails: A comma seperated string of emails to update."],
         "url" => ["url","URL: A url pointing to a downloadable csv less than 100mbs."],
         "vars" => ["vars","Global Vars: Vars to set on every user in the update. Input a JSON object or each var prepended with 'var_'. Eg: var_source=upload"],

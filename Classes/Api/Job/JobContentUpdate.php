@@ -2,21 +2,21 @@
 
 include_once(dirname(__DIR__)."/Job/JobPost.php");         //Call Specifc//Incomplete//
 
-class JobImport extends JobPost {
+class JobContentUpdate extends JobPost {
 
     /*
      * Stats type
      *
      * @var array
      */
-    protected $job = "import";
+    protected $job = "content_update";
 
     /*
      * Valid Parameters for a call
      *
      * @var array
      */
-    protected $description = "Import a number of email addresses into a single list from a csv file.";
+    protected $description = "Update or create any number of Products or Articles.";
 
 
     /*
@@ -30,12 +30,9 @@ class JobImport extends JobPost {
      */
     private $cli_params__job = [
         //returned_var => ["cli_entry_name", "Description"]
-        "list" => ["list","List: The name of the list to import to (if it does not exist, it will be created)."],
-        "signup_dates" => ["signup_dates","Signup Date: Pass 1 to set custom signup dates. CSV file's second column must be 'signup_date'."],
-        "emails" => ["emails","Emails: A comma seperated string of emails to update."],
-        "url" => ["url","URL: A url pointing to a downloadable csv less than 100mbs."],
         "file" => ["file","File: Local path to a csv file with user information. Will be automatically split up and uploaded in chunks."],
-        "brand_name" => ["brand", "Brand: A human readable name of the client. Used for folder creation when uploading files."]
+        "file_type" => ["file_type", "File Type: JSON or CSV. "],
+        "brand_name" => ["brand", "Brand: A human readable name of the client. Used for folder creation when uploading files."],
         // "" => ["",""],
     ];
 
@@ -46,7 +43,18 @@ class JobImport extends JobPost {
      */
     private $cli_options__job = [
         //returned_flag => ["cli_entry_name", "Description"]
+        "-j" => ["isJobDescription","return more information about this job."],
+        "-a" => ["isValidateFile", "skip checks on file before upload."]
         // "" => [],
+    ];
+
+    /*
+     * Allow flags set here to effect other flags as well as themselves.
+     *
+     * @var array
+     */
+    private $cli_options_modifications__job = [
+        "-j" => ["isHelp", true],
     ];
 
     /*
@@ -63,9 +71,8 @@ class JobImport extends JobPost {
      */
     private $api_params_validation__job = [
         //api_param => ["negation_param" => ["dependency_1", "dependency_2"], "always_required" => ["dependency_3"]],
-        "always_required" => ["require_one" => ["url","file","emails"], "always_required" => ["list"]],
-        "brand_name" => ["always_required" => ["file"]],
-        // "" => [], 
+        "file" => ["always_required" => ["file_type"]],
+        // "" => [],
     ];
 
     /*
@@ -76,19 +83,20 @@ class JobImport extends JobPost {
      */
     protected $api_params_structure__job = [
         //"returned_var_array_name" => "prefix_name"
+
     ];
 
     public function __construct() {
         $this->api_vars["job"] = $this->job;
         parent::__construct();
     }
-
+    
     public function ingestInput($vars, $skipValidate = false) {
         parent::ingestInput($vars, $skipValidate);
+        //Prep file upload data
         if (isset($this->api_vars["file"])) {
             $this->method = "uploadFile";
             $this->endpoint = $this->job;
-            $this->api_vars["file_type"] = "csv";
             if (!isset($this->api_vars["brand_name"])) {
                 $this->api_vars["brand_name"] = $this->account->getName();
                 if ($this->api_vars["brand_name"] == null) {
@@ -96,23 +104,31 @@ class JobImport extends JobPost {
                     $this->api_vars["brand_name"] = "unknown";                
                 }
             }
+            if (CliScriptAbstract::$flags["isValidateFile"]) {
+                $this->api_vars["is_skip_check"] = true;
+            }
         }
     }
 
     public function getMethod() {
-        if (!isset($this->method) {
+        if (!isset($this->method)) {
             $this->method = "postCall";
         }
         return parent::getMethod($this->method);
     }
 
 //helper methods
-//No need to modify when creating a new class
 
     public function useQueryCLI() {
         parent::useQueryCLI();
     }
-    
+
+    public function getOtherInputsDescription() {
+        if (CliScriptAbstract::$flags["isJobDescription"]) {
+            return parent::getOtherInputsDescription($fd);
+        }
+        return parent::getOtherInputsDescription();
+    }
 
     public function getCliParameters($child_params = null) {
         //I'm reversing the array so I can have later classes overwrite earlier ones, but the parent classes still display first.
@@ -122,15 +138,6 @@ class JobImport extends JobPost {
             $cli_params = array_reverse($this->cli_params__job);
         }
         return parent::getCliParameters($cli_params);
-    }
-
-    public function getCliOptions($child_options = null) {
-        if ($child_options != null) {
-            $cli_options = $child_options + $this->cli_options__job;
-        } else {
-            $cli_options = $this->cli_options__job;
-        }
-        return parent::getCliOptions($cli_options);
     }
 
     public function getApiParamValidation($child_param_validation = null) {
@@ -149,6 +156,24 @@ class JobImport extends JobPost {
             $params_structure = $this->api_params_structure__job;
         }
         return parent::getApiParamStructure($params_structure);
+    }
+
+    public function getCliOptions($child_options = null) {
+        if ($child_options != null) {
+            $cli_options = $child_options + $this->cli_options__job;
+        } else {
+            $cli_options = $this->cli_options__job;
+        }
+        return parent::getCliOptions($cli_options);
+    }
+
+    public function getFlagModifications($child_modifications = null) {
+        if ($child_modifications != null) {
+            $option_modifications = $child_modifications + $this->cli_options_modifications__job;
+        } else {
+            $option_modifications = $this->cli_options_modifications__job;
+        }
+        return $option_modifications;
     }
 
     public function getCallData() {

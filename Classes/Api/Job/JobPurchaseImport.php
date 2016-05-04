@@ -31,7 +31,7 @@ class JobPurchaseImport extends JobPost {
     private $cli_params__job = [
     	//returned_var => ["cli_entry_name", "Description"]
         "file" => ["file","File: Local path to a csv file with Purchase data. Will be automatically split up and uploaded in chunks."],
-        "brand_name" => ["brand", "Brand: A human readable name of the cleint. Used for folder creation when uploading files."],
+        "brand_name" => ["brand", "Brand: A human readable name of the client. Used for folder creation when uploading files."],
         // "" => ["",""],
     ];
 
