@@ -29,9 +29,8 @@ class ContentGet extends Content {
      */
     private $cli_params__method = [
     	//returned_var => ["cli_entry_name", "Description"]
-        "items" => ["items","Return Items: Provide Url or return this number of items (default is 20)",
+        "items" => ["items","Return Items: Provide Url or return this number of items (default is 20)"],
         // "" => ["",""],
-
     ];
 
     /*
