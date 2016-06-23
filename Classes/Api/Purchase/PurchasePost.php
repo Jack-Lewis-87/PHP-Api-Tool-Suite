@@ -98,7 +98,7 @@ class PurchasePost extends Purchase {
         "item7" => "item7_",
         "item8" => "item8_",
         "item9" => "item9_",
-        "item10" => "item10_",   //This is a harcoded limit. To increase, add more here and to getCallData()
+        "item10" => "item10_",   //This is as many 'easy' entries as I cared to include. Should probably generalize this solution. To increase hardcoded limit, add more here and to getCallData()
         "adjustments_raw" => "adjust_",
         "tenders_raw" => "tender_",
         "cookies" => "cookie_",
@@ -146,7 +146,6 @@ class PurchasePost extends Purchase {
             }
             unset($this->api_vars["tenders_raw"]);
         }
-        echo "hi";
         //Add individual Items to the "items" array
         for ($i=0; $i < 10; $i++) { 
 
