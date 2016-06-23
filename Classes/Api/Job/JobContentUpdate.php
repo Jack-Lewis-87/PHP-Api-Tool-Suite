@@ -31,7 +31,7 @@ class JobContentUpdate extends JobPost {
     private $cli_params__job = [
         //returned_var => ["cli_entry_name", "Description"]
         "file" => ["file","File: Local path to a csv file with user information. Will be automatically split up and uploaded in chunks."],
-        "file_type" => ["file_type", "File Type: JSON or CSV. "],
+        // "file_type" => ["file_type", "File Type: JSON or CSV. "],
         "brand_name" => ["brand", "Brand: A human readable name of the client. Used for folder creation when uploading files."],
         // "" => ["",""],
     ];
@@ -71,7 +71,7 @@ class JobContentUpdate extends JobPost {
      */
     private $api_params_validation__job = [
         //api_param => ["negation_param" => ["dependency_1", "dependency_2"], "always_required" => ["dependency_3"]],
-        "file" => ["always_required" => ["file_type"]],
+        // "file" => ["always_required" => ["file_type"]],
         // "" => [],
     ];
 
@@ -94,7 +94,7 @@ class JobContentUpdate extends JobPost {
     public function ingestInput($vars, $skipValidate = false) {
         parent::ingestInput($vars, $skipValidate);
         //Prep file upload data
-        if (isset($this->api_vars["file"])) {
+        if (isset($this->api_vars["file"])) { 
             $this->method = "uploadFile";
             $this->endpoint = $this->job;
             if (!isset($this->api_vars["brand_name"])) {
@@ -107,6 +107,11 @@ class JobContentUpdate extends JobPost {
             if (CliScriptAbstract::$flags["isValidateFile"]) {
                 $this->api_vars["is_skip_check"] = true;
             }
+            if (!isset($this->api_vars["file_type"])) {
+                $this->api_vars["file_type"] = "json";
+            }
+        } else {
+            echo "This isn't supported. How did you get here?\n\nSERIOUSLY!!!???\n\n";
         }
     }
 

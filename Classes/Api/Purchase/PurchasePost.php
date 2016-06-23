@@ -146,8 +146,10 @@ class PurchasePost extends Purchase {
             }
             unset($this->api_vars["tenders_raw"]);
         }
+        echo "hi";
         //Add individual Items to the "items" array
         for ($i=0; $i < 10; $i++) { 
+
             $item = "item".$i;
             if (isset($this->api_vars[$item])) {
                 if (!isset($this->api_vars["items"])) {
