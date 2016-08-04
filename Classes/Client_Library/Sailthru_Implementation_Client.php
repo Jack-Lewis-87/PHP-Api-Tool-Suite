@@ -432,8 +432,8 @@ class Sailthru_Implementation_Client {
         print ucwords($this->job_data["job"], " _")." with ".$this->file."\n";
         $api_log_str .= ucfirst($this->job_data["job"])." with ".$this->file."\n";
 
-        print "Upload data stored to ".$this->base_dir."\n";
-        $api_log_str .= "Upload data stored to ".$this->base_dir."\n";
+        print "Upload data and logs stored in ".$this->base_dir." folder.\n";
+        $api_log_str .= "Upload data and logs stored in ".$this->base_dir." folder. You are here so not sure why I printed this...\n";
 
         $bytes_to_megabytes = 1000000;
         print "Splitting files into ".($this->chunk_mem_split/$bytes_to_megabytes)."mb chunks\n\n";
@@ -675,8 +675,8 @@ class Sailthru_Implementation_Client {
         print "File split into ".($sub_file_num - 1)." files.\n";
         fwrite($api_log, "File split into ".($sub_file_num - 1)." files.\n");
         if ($errorRecords) {
-            print "Some records will fail, check error log.\n\n";
-            fwrite($api_log, "Some records will fail, check error log.\n\n");
+            print "WARNING: Some records will fail, check error log.\n\n";
+            fwrite($api_log, "WARNING: Some records will fail, check error log.\n\n");
         }
         fclose($sub_file);
         fclose($main_file);
@@ -790,8 +790,8 @@ class Sailthru_Implementation_Client {
                     } else {
                         print "\nAll Files Attempted.\n";
                     }
-                    fwrite($api_log, "All Files Attempted");
-                    echo "Full API log with responses saved to: ".$api_log_path."\n";
+                    fwrite($api_log, "All Files Attempted\n");
+                    echo "Full API log with responses saved to API log.\n";
         			$uploading = false;
         		}
         	} else {
