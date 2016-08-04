@@ -88,7 +88,7 @@ $api_object->ingestInput($input_vars["config_vars"] + $input_vars["wildcard_vars
 if (CliScriptAbstract::$flags["isDefaults"]) {
 	$account_credentials->setAccount("defaults");
 }
-$client = new Sailthru_Implementation_Client($account_credentials->getKey(), $account_credentials->getSecret(), $account_credentials->getEnvironment);
+$client = new Sailthru_Implementation_Client($account_credentials->getKey(), $account_credentials->getSecret(), $account_credentials->getEnvironment());
 ////Designate Call Parameters
 $call_data = $api_object->getCallData();
 $endpoint = $api_object->getEndpoint();
@@ -100,6 +100,11 @@ CliScriptAbstract::$flags["isSilent"]?:print "Starting\n";
 if ((CliScriptAbstract::$flags["isVerbose"] || CliScriptAbstract::$flags["isInteractive"]) && (!CliScriptAbstract::$flags["isQuiet"] && !CliScriptAbstract::$flags["isSilent"])) {
 	if ($account_credentials->getNumber() && $account_credentials->getKey() == $account_credentials->getKey($account_credentials->getNumber())) {
 		print "Account ".$account_credentials->getNumber().": ".$account_credentials->getName()."\n";
+	}
+	if ($account_credentials->getEnvironment() != "https://api.sailthru.com") {
+		print "Environment: ".$account_credentials->getEnvironment()."\n";
+	} else {
+		print "standard\n";
 	}
 	print "Key: ".$account_credentials->getKey()."\n";
 	print "Secret: ".$account_credentials->getSecret()."\nValues:\n";
@@ -115,10 +120,14 @@ if ((CliScriptAbstract::$flags["isVerbose"] || CliScriptAbstract::$flags["isInte
 
 ////Api Call
 $response = $client->$method($endpoint, $call_data); 
-		
+				
 ////Status Output						
 if (!CliScriptAbstract::$flags["isQuiet"] && !CliScriptAbstract::$flags["isSilent"]) {
 	print json_encode($response, JSON_PRETTY_PRINT);
+	if (!function_exists('json_last_error_msg')) {
+		print "Something isn't right..\n";
+		var_dump($response);
+	}
 }
 CliScriptAbstract::$flags["isSilent"]?:print"\nFinished\n";
 

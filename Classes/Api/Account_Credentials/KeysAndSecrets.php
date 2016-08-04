@@ -32,7 +32,7 @@ class KeysAndSecrets extends DefaultKeysAndSecrets
 		}
 	}
 
- 	public static function setKeySecret($key, $secret, $name = null, $id = null, $environment = null) {
+ 	public static function setKeySecret($key, $secret, $name = null, $id = null, $environment = "https://api.sailthru.com") {
  		if ($key == null || $secret == null) {
  			die("Key and Secret need to be set together\n");
  		} else {
@@ -40,6 +40,7 @@ class KeysAndSecrets extends DefaultKeysAndSecrets
  			KeysAndSecrets::$secret = $secret;
  			KeysAndSecrets::$name = $name; 
 			KeysAndSecrets::$number = $id; 
+			KeysAndSecrets::$environment = $environment;
  		}
  	} 
 
@@ -51,6 +52,7 @@ class KeysAndSecrets extends DefaultKeysAndSecrets
  			KeysAndSecrets::$key = KeysAndSecrets::$clients[$number]["key"];
  			KeysAndSecrets::$secret = KeysAndSecrets::$clients[$number]["secret"];
  			KeysAndSecrets::$name = KeysAndSecrets::$clients[$number]["name"];
+ 			KeysAndSecrets::$environment = KeysAndSecrets::$clients[$number]["environment"];
  		}
  	}
 
