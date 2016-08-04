@@ -103,8 +103,6 @@ if ((CliScriptAbstract::$flags["isVerbose"] || CliScriptAbstract::$flags["isInte
 	}
 	if ($account_credentials->getEnvironment() != "https://api.sailthru.com") {
 		print "Environment: ".$account_credentials->getEnvironment()."\n";
-	} else {
-		print "standard\n";
 	}
 	print "Key: ".$account_credentials->getKey()."\n";
 	print "Secret: ".$account_credentials->getSecret()."\nValues:\n";

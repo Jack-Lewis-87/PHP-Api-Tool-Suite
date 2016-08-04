@@ -37,7 +37,7 @@ if (file_exists($cred_file)) {
 } else {
     print "Lets set up your default API Key and Secret.\n\n";    
 }
-$file_access;
+
 if (($creds = fopen($cred_file, $file_access)) === FALSE) {
    	throw new Exception("Unable to open ".$cred_file);   
    	print "Couldn't open file, but then again, there was an exception, so you shouldn't be here...";
