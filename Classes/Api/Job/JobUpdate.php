@@ -159,7 +159,6 @@ class JobUpdate extends JobPost {
     }
 
     public function getMethod() {
-        print "Hi";var_dump($this->method);
         if (!isset($this->method) || $this->method == "post") {
             $this->method = "postCall";
         }
@@ -174,8 +173,6 @@ class JobUpdate extends JobPost {
 
     public function getOtherInputsDescription() {
         if (CliScriptAbstract::$flags["isJobDescription"]) {
-            $fd = "hi!";
-
             return parent::getOtherInputsDescription($fd);
         }
         return parent::getOtherInputsDescription();
