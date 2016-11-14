@@ -47,7 +47,7 @@ print "Are you a QA engineer or Dev who needs to set an account in a different e
 $answer = readline();
 if ($answer == "y" || $answer == "yes")  
 {
-	print "Please enter the API domain. Eg https://api.sailthru.com\n";
+	print "Please enter the API domain. Eg http://api.qa7.sailthru-qa.com (https tends to throw errors.)\n";
 	$environment = readline();
 	print "Recorded. ";
 } 
@@ -118,7 +118,7 @@ do
 		$retry += 1;
 	} while ($name == "" && $retry < $user_retries_entry); 
 
-	$client = new Sailthru_Implementation_Client($key, $secret);
+	$client = new Sailthru_Implementation_Client($key, $secret, $environment);
 	
 	try 
 	{

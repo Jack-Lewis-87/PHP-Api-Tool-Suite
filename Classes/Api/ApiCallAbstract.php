@@ -86,7 +86,8 @@ class ApiCallAbstract implements CliScriptInterface {
         "-q" => ["isQuiet", "not print the response text to the terminal."],
         "-s" => ["isSilent", "stop any output from printing to the terminal, including confirmations."],
         "-o" => ["isOverrideValidation", "skip validation step with api params."],
-        "-p" => ["isListClientIds", "print out configured accounts"],
+        "-p" => ["isListClientIds", "print out configured accounts."],
+        "-z" => ["isReturnHeaders", "return the headers from curl."]
     ];
     protected $cli_options;
 

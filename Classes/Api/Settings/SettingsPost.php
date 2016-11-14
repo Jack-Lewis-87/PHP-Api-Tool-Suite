@@ -89,8 +89,6 @@ class SettingsPost extends Settings {
             $this->api_vars["upload_name"] = "file";
             $this->method = "genericFileUpload";
         }
-        echo "vars \n";
-        var_dump($this->api_vars);
     }
 
     public function getCliParameters($child_params = null) {

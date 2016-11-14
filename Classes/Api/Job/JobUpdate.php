@@ -159,7 +159,8 @@ class JobUpdate extends JobPost {
     }
 
     public function getMethod() {
-        if (!isset($this->method)) {
+        print "Hi";var_dump($this->method);
+        if (!isset($this->method) || $this->method == "post") {
             $this->method = "postCall";
         }
         return parent::getMethod($this->method);

@@ -207,7 +207,7 @@ class Sailthru_Implementation_Client {
         $this->setTimeZone();
     }
 
-    public function getCall($endpoint, $data) 
+    public function getCall($endpoint, $data, $headers = false) 
     {
         $retry_limit = $this->retry_limit;
         $fail = 0; //Failure counter
@@ -225,10 +225,13 @@ class Sailthru_Implementation_Client {
             }
         }
         while ($retry_limit > $fail);
+        if ($headers == true) {
+            var_dump($this->lastResponseInfo);
+        }        
         return $response;
     }
 
-    public function postCall($endpoint, $data) 
+    public function postCall($endpoint, $data, $file = null, $headers = false) 
     {
         $retry_limit = $this->retry_limit;
         $fail = 0; //Failure counter
@@ -246,10 +249,13 @@ class Sailthru_Implementation_Client {
             }
         }
         while ($retry_limit > $fail);
+        if ($headers == true) {
+            var_dump($this->lastResponseInfo);
+        }        
         return $response;
     }
 
-    public function deleteCall($endpoint, $data) 
+    public function deleteCall($endpoint, $data, $headers = false) 
     {
         $retry_limit = $this->retry_limit;
         $fail = 0; //Failure counter
@@ -267,6 +273,9 @@ class Sailthru_Implementation_Client {
             }
         }
         while ($retry_limit > $fail);
+        if ($headers == true) {
+            var_dump($this->lastResponseInfo);
+        }
         return $response;
     }
 
@@ -335,7 +344,10 @@ class Sailthru_Implementation_Client {
     public function genericFileUpload($method, $data) {
         $upload_name = $data["upload_name"];
         unset($data["upload_name"]);
-        $response = $this->client->apiPost($method, $data, array($upload_name)); 
+        if (!file_exists($data[$upload_name])) {
+            throw new Exception("File: ".$data[$upload_name]." does not exist.");
+        }
+        $response = $this->client->apiPost($method, $data, [$upload_name]); 
         return $response;
     }
 

@@ -114,6 +114,9 @@ if ((CliScriptAbstract::$flags["isVerbose"] || CliScriptAbstract::$flags["isInte
 }
 
 ////Api Call
+echo "Method: ".$method;
+echo "\n";
+echo "Endpoint: ".$endpoint;
 $response = $client->$method($endpoint, $call_data); 
 		
 ////Status Output						

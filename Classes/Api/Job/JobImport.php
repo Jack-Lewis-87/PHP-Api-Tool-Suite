@@ -100,7 +100,7 @@ class JobImport extends JobPost {
     }
 
     public function getMethod() {
-        if (!isset($this->method) {
+        if (!isset($this->method)) {
             $this->method = "postCall";
         }
         return parent::getMethod($this->method);

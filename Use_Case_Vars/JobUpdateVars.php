@@ -14,18 +14,18 @@ these comment markers
 */
 
 ////////////////////////////////////////////////////////////////////////////////
-//Title: Demo 1
-//Use Case: Create Profiles using Email.
-//Status: Isn't creating profiles I can find. 
-//Client: Jack's Test Account
-/*
-$account_credentials->setAccountById(4627);
-*/ 
-//Vars
-/*
-$api_object->setVar("id","jlewis@sailthru.com");
-$api_object->setVar("key", "extid");
-*/
+// //Title: QA on Lists w/ $ ticket
+// //Use Case: Break stuff by creating Lists w/ $
+// //Status:  
+// //Client: Pete QA7
+
+// $account_credentials->setAccountById(4023);
+ 
+// //Vars
+
+// $api_object->setVar("emails","jlewis@sailthru.com, jlewis+1@sailthru.com");
+// $api_object->setVar("update", ["lists"=>['$hello'=>1]]);
+
 
 ////////////////////////////////////////////////////////////////////////////////
 //Title: Demo Example 2

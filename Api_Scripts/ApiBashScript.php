@@ -116,9 +116,14 @@ if ((CliScriptAbstract::$flags["isVerbose"] || CliScriptAbstract::$flags["isInte
 	print "\n\nCall Response\n";
 }
 
+if (CliScriptAbstract::$flags["isReturnHeaders"]) {
+	$show_headers = true;
+} else {
+	$show_headers = false;
+}
 ////Api Call
-$response = $client->$method($endpoint, $call_data); 
-				
+$response = $client->$method($endpoint, $call_data, $show_headers); 
+						
 ////Status Output						
 if (!CliScriptAbstract::$flags["isQuiet"] && !CliScriptAbstract::$flags["isSilent"]) {
 	print json_encode($response, JSON_PRETTY_PRINT);
