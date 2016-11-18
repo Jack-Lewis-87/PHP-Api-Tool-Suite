@@ -27,29 +27,29 @@ these comment markers
 // $api_object->setVar("", "extid");
 
 
-////////////////////////////////////////////////////////////////////////////////
-//Title: Demo Example 2
-//Use Case: Post As much stuff as possible
-//Status: 
-//Client: Jack's Test Account
+// ////////////////////////////////////////////////////////////////////////////////
+// //Title: Demo Example 2
+// //Use Case: Post As much stuff as possible
+// //Status: 
+// //Client: Jack's Test Account
 
-$account_credentials->setAccountById(4627);
+// $account_credentials->setAccountById(4627);
  
-//Vars
+// //Vars
 
-$api_object->setVar("url","http://example.com/product");
-$api_object->setVar("keys",["sku"=>"123abc"]);
-$api_object->setVar("title","This is an Example Title");
-$api_object->setVar("description","This is not a description. It is a paradox.");
-$api_object->setVar("price",2099);
-$api_object->setVar("inventory",42);
-$api_object->setVar("date","2016-06-20 14:30:00 -0400");
-$api_object->setVar("tags","blue, jeans, size-m");
-$api_object->setVar("vars",["var1"=>"var 1 value"]);
-$images = ["full" => "http://example.com/images/product.jpg"];
-$api_object->setVar("images",$images);
-$api_object->setVar("site_name","Store");
-$api_object->setVar("author","Ex Ample");
+// $api_object->setVar("url","http://example.com/product");
+// $api_object->setVar("keys",["sku"=>"123abc"]);
+// $api_object->setVar("title","This is an Example Title");
+// $api_object->setVar("description","This is not a description. It is a paradox.");
+// $api_object->setVar("price",2099);
+// $api_object->setVar("inventory",42);
+// $api_object->setVar("date","2016-06-20 14:30:00 -0400");
+// $api_object->setVar("tags","blue, jeans, size-m");
+// $api_object->setVar("vars",["var1"=>"var 1 value"]);
+// $images = ["full" => "http://example.com/images/product.jpg"];
+// $api_object->setVar("images",$images);
+// $api_object->setVar("site_name","Store");
+// $api_object->setVar("author","Ex Ample");
 
 
 ////////////////////////////////////////////////////////////////////////////////
