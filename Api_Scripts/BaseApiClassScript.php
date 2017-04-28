@@ -117,7 +117,7 @@ if ((CliScriptAbstract::$flags["isVerbose"] || CliScriptAbstract::$flags["isInte
 echo "Method: ".$method;
 echo "\n";
 echo "Endpoint: ".$endpoint;
-$response = $client->$method($endpoint, $call_data); 
+$response = $client->$method($endpoint, $call_data, CliScriptAbstract::$flags["isReturnHeaders"]); 
 		
 ////Status Output						
 if (!CliScriptAbstract::$flags["isQuiet"] && !CliScriptAbstract::$flags["isSilent"]) {

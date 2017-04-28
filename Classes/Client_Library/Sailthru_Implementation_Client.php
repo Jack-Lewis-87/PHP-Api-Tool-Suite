@@ -756,9 +756,11 @@ class Sailthru_Implementation_Client {
         			$retry = 0;
         			while ($retry < $retry_limit) {
                         //echo"About to attempt an upload\n";
-        				try {					
+        				try {				
+                            var_dump($data);	
          					$response = $this->client->apiPost('job', $data, array('file')); 
                             $retry = $SUCCESS_INDICATOR;
+                            var_dump($response);
 						} catch (Exception $e) {
 							++$retry;
                             if ($retry == $retry_limit) {
