@@ -2,7 +2,7 @@
 // Base Script to be copied then modified.
 //											COPY THEN MODIFY
 
-$call = "List";
+$call = "Stat";
 $method = "Get";
 
 
@@ -92,7 +92,7 @@ $api_object->ingestInput($input_vars["config_vars"] + $input_vars["wildcard_vars
 if (CliScriptAbstract::$flags["isDefaults"]) {
 	$account_credentials->setAccount("defaults");
 }
-$client = new Sailthru_Implementation_Client($account_credentials->getKey(), $account_credentials->getSecret(), $account_credentials->getEnvironment);
+$client = new Sailthru_Client($account_credentials->getKey(), $account_credentials->getSecret(), $account_credentials->getEnvironment);
 ////Designate Call Parameters
 $call_data = $api_object->getCallData();
 $endpoint = $api_object->getEndpoint();
@@ -118,7 +118,7 @@ if ((CliScriptAbstract::$flags["isVerbose"] || CliScriptAbstract::$flags["isInte
 }
 
 ////Api Call
-$response = $client->$method($endpoint, $call_data); 
+$response = $client->stats_blast(5502451, ["clickmap"=>1]); 
 		
 ////Status Output						
 if (!CliScriptAbstract::$flags["isQuiet"] && !CliScriptAbstract::$flags["isSilent"]) {
