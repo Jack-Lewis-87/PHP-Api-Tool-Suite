@@ -137,6 +137,7 @@ do
 			if ($answer == "proceed")  
 			{
 				$is_repeat = false;
+				$id = $return_id;
 			} 
 			else if ($answer == "abort") 
 			{
